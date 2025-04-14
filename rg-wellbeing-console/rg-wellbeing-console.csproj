@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\rg_wellbeing\rg_wellbeing.csproj" />
+    <ProjectReference Include="..\rg-wellbeing\rg-wellbeing.csproj" />
   </ItemGroup>
 
 </Project>

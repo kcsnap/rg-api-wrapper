@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rg-wellbeing-console", "rg-wellbeing\rg-wellbeing-console.csproj", "{2E4306BD-F746-434E-A1E2-CE5A16DB495D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rg-wellbeing-console", "rg-wellbeing-console\rg-wellbeing-console.csproj", "{2E4306BD-F746-434E-A1E2-CE5A16DB495D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rg_wellbeing", "rg_wellbeing\rg_wellbeing.csproj", "{A018F12B-7B80-4C0E-8042-19F657535460}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rg-wellbeing", "rg-wellbeing\rg-wellbeing.csproj", "{A018F12B-7B80-4C0E-8042-19F657535460}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
