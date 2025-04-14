@@ -2,6 +2,7 @@
 using rg_wellbeing.Auth.Models;
 using rg_wellbeing.Content;
 
+// https://stackoverflow.com/questions/42268265/how-to-get-manage-user-secrets-in-a-net-core-console-application
 var clientId = string.Empty;
 var clientSecret = string.Empty;
 var partnerId = string.Empty;
