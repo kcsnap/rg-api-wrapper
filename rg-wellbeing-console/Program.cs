@@ -6,6 +6,7 @@ using rg_wellbeing.Content;
 /* SUGGESTIONS - Documentation updates or other enhancements to simplify the onboarding of BUs
  * > Accept headers clearly defined
  * > Steps to view simple article uploaded on the wellbeing platform
+ * > Make postman files publically available https://edenred-my.sharepoint.com/:u:/p/ventsi_boyadzhiev/EY6eRZwPY9VHmhEelT1nq2MBbivcG1ezS1KvuaftlwRNCw?e=RrcV0f
  * 
  */
 
@@ -18,15 +19,25 @@ IConfigurationRoot config = new ConfigurationBuilder()
             .AddUserSecrets<Program>()
             .Build();
 
+// See https://aka.ms/new-console-template for more information
+Console.WriteLine("Welcome to RG API Console!");
+
 // https://stackoverflow.com/questions/42268265/how-to-get-manage-user-secrets-in-a-net-core-console-application
 var clientId = config["ClientId"];
 var clientSecret = config["ClientSecret"];
 var partnerId = config["PartnerId"];
 
-// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Welcome to RG API Console!");
-Console.WriteLine("");
-Console.WriteLine("Please ensure all credentials have been updated prior to continuing [press any key to continue].");
+// if any are blank, fail with message
+if(string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(clientSecret) || string.IsNullOrEmpty(partnerId))
+{
+    Console.WriteLine("Please update your secrets in the User Secrets file.");
+    Console.WriteLine("See https://stackoverflow.com/questions/42268265/how-to-get-manage-user-secrets-in-a-net-core-console-application for more information.");
+    Console.WriteLine("Press any key to exit.");
+    Console.ReadKey();
+    return;
+}
+
+Console.WriteLine(">> Press enter to create content and upload article.");
 Console.ReadLine();
 
 // setup credentials
@@ -40,6 +51,8 @@ var credentials = new RgPartnerCredentials
 // authenticate
 var authentication = new Authentication(credentials);
 var authResponse = await authentication.GetAccessTokenAsync();
+
+Console.WriteLine();
 Console.WriteLine("Access Token: " + authResponse.AccessToken);
 
 var contentManager = new RgContentManager(authResponse);
