@@ -1,11 +1,27 @@
-﻿using rg_wellbeing.Auth;
+﻿using Microsoft.Extensions.Configuration;
+using rg_wellbeing.Auth;
 using rg_wellbeing.Auth.Models;
 using rg_wellbeing.Content;
 
+/* SUGGESTIONS - Documentation updates or other enhancements to simplify the onboarding of BUs
+ * > Accept headers clearly defined
+ * > Steps to view simple article uploaded on the wellbeing platform
+ * 
+ */
+
+// Example URL of wellbeing for this BU (login via okta)
+// https://site25398.testing.aws.rewardgateway.net/WellbeingCentre/topic/7
+// ClientName = "SmartHub Demo Site [Staging]"
+
+// manage secrets
+IConfigurationRoot config = new ConfigurationBuilder()
+            .AddUserSecrets<Program>()
+            .Build();
+
 // https://stackoverflow.com/questions/42268265/how-to-get-manage-user-secrets-in-a-net-core-console-application
-var clientId = string.Empty;
-var clientSecret = string.Empty;
-var partnerId = string.Empty;
+var clientId = config["ClientId"];
+var clientSecret = config["ClientSecret"];
+var partnerId = config["PartnerId"];
 
 // See https://aka.ms/new-console-template for more information
 Console.WriteLine("Welcome to RG API Console!");
@@ -30,26 +46,59 @@ var contentManager = new RgContentManager(authResponse);
 
 // actions
 {
+    // get available providers
+    var providersResponse = await contentManager.GetProviders();
+
+    // get available providers
+    var topicsResponse = await contentManager.GetTopics();
+
+    // get available tags
+    var tagResponse = await contentManager.GetTags();
+
     // create content
     var responseContent = await contentManager.CreateContent(new RgWellbeingContentCreateRequest()
     {
-        Thumbnail = "https://ugc.rewardgateway.dev/image/get/1/wellbeingcenter/1/123.jpg",
+        Thumbnail = "https://www.snapwire.co.uk/media/2yefydvg/square-logo.png",
         Description = "Join Helen Faliveno in this 15-minute video",
         Title = "Neck tension release",
-        ContentType = "video",
-        Provider = "8a98e6b3-d589-4782-9522-da619acc7916",
-        TopicUuid = "8a98e6b3-d589-4782-9522-da619acc7917",
-        LanguageCode = "en"
+        ContentType = "article",
+        Provider = providersResponse.Providers[0].Uuid,
+        TopicUuid = topicsResponse.Topics[0].Uuid,
+        LanguageCode = "en",
+        TagIds = new List<string> // default to first 2 tags for now...
+        {
+            tagResponse.Tags[0].Uuid,
+            tagResponse.Tags[1].Uuid
+        }
     });
 
+    Console.WriteLine();
+    Console.WriteLine("Content Created with Uuid: " + responseContent.Uuid);
+    Console.WriteLine("...to Provider: " + providersResponse.Providers[0].Name);
+    Console.WriteLine("...and Topic: " + topicsResponse.Topics[0].Name);
+    Console.WriteLine("...and Tags: " + tagResponse.Tags[0].Title + " and " + tagResponse.Tags[1].Title);
+
     // upload article
-    var responseArticle = await contentManager.UploadArticle(responseContent.Uuid, "<p>Lorem Ipsum</p>");
+    Console.WriteLine();
+    Console.WriteLine("Adding Article...");
+    var responseArticle = await contentManager.UploadArticle(responseContent.Uuid, "<p>Today is " + DateTime.Now.ToString("ddd MM yyyy HH:mm:ss") + "</p>");
+    Console.WriteLine("Article created with Uuid: " + responseArticle.Uuids[0]);
 
     // upload audio
+    Console.WriteLine();
+
     // upload video
+    Console.WriteLine();
+
     // upload recipe
+    Console.WriteLine();
+
     // get detailed content
+    Console.WriteLine();
+
     // delete content
+    Console.WriteLine();
+
 
     // get tags
     // get topics

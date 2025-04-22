@@ -1,5 +1,5 @@
-﻿using rg_wellbeing.Auth.Models;
-using System.Text.Json;
+﻿using Newtonsoft.Json;
+using rg_wellbeing.Auth.Models;
 
 namespace rg_wellbeing.Auth
 {
@@ -33,7 +33,7 @@ namespace rg_wellbeing.Auth
             {
                 // Read the response content as a string
                 var result = await response.Content.ReadAsStringAsync();
-                var authResponse = JsonSerializer.Deserialize<RgPartnerAuthResponse>(result);
+                var authResponse = JsonConvert.DeserializeObject<RgPartnerAuthResponse>(result);
                 return authResponse;
             }
             else
