@@ -16,7 +16,7 @@ namespace rg_wellbeing.Content
         {
             _authResponse = authResponse;
 
-            if (!useProxy)
+            if (useProxy)
             {
                 // used with HttpToolkit to track api calls
                 var httpClientHandler = new HttpClientHandler
@@ -94,6 +94,13 @@ namespace rg_wellbeing.Content
             }
         }
 
+        public async Task<RgWellbeingContentCreateResponse> GetContent(string uuid)
+        {
+            var url = string.Format(RgUrls.WellbeingContentArticle, uuid);
+
+            return await WellbeingApiGet<RgWellbeingContentCreateResponse>(url);
+        }
+
         public async Task<RgWellbeingContentCreateResponse> DeleteContent(RgWellbeingContentCreateRequest wellbeingContent)
         {            
             string json = JsonConvert.SerializeObject(wellbeingContent);
@@ -114,6 +121,12 @@ namespace rg_wellbeing.Content
             }
         }
 
+        public async Task<RgWellbeingArticleUploadResponse> GetArticle(string uuid)
+        {
+            var url = string.Format(RgUrls.WellbeingContentArticle, uuid);
+
+            return await WellbeingApiGet<RgWellbeingArticleUploadResponse>(url);
+        }
         public async Task<RgWellbeingArticleUploadResponse> UploadArticle(string uuid, string htmlAsString)
         {
             var request = "{" +

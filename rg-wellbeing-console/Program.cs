@@ -7,7 +7,6 @@ using rg_wellbeing.Content;
  * > Accept headers clearly defined
  * > Steps to view simple article uploaded on the wellbeing platform
  * > Make postman files publically available https://edenred-my.sharepoint.com/:u:/p/ventsi_boyadzhiev/EY6eRZwPY9VHmhEelT1nq2MBbivcG1ezS1KvuaftlwRNCw?e=RrcV0f
- * 
  */
 
 // Example URL of wellbeing for this BU (login via okta)
@@ -55,7 +54,7 @@ var authResponse = await authentication.GetAccessTokenAsync();
 Console.WriteLine();
 Console.WriteLine("Access Token: " + authResponse.AccessToken);
 
-var contentManager = new RgContentManager(authResponse);
+var contentManager = new RgContentManager(authResponse, true);
 
 // actions
 {
@@ -68,22 +67,24 @@ var contentManager = new RgContentManager(authResponse);
     // get available tags
     var tagResponse = await contentManager.GetTags();
 
-    // create content
-    var responseContent = await contentManager.CreateContent(new RgWellbeingContentCreateRequest()
+    var contentCreation = new RgWellbeingContentCreateRequest()
     {
         Thumbnail = "https://www.snapwire.co.uk/media/2yefydvg/square-logo.png",
-        Description = "Join Helen Faliveno in this 15-minute video",
-        Title = "Neck tension release",
+        Description = "Join Coxy in this 15-minute video",
+        Title = "Ear tension release",
         ContentType = "article",
-        Provider = providersResponse.Providers[0].Uuid,
-        TopicUuid = topicsResponse.Topics[0].Uuid,
+        Provider = "f609e4ae-977d-11ef-8b28-023f2f4bd5f5", // providersResponse.Providers[0].Uuid,
+        TopicUuid = topicsResponse.Topics[1].Uuid, // 0 is 'Featured' - don't reuse this
         LanguageCode = "en",
         TagIds = new List<string> // default to first 2 tags for now...
         {
             tagResponse.Tags[0].Uuid,
             tagResponse.Tags[1].Uuid
         }
-    });
+    };
+
+    // create content
+    var responseContent = await contentManager.CreateContent(contentCreation);
 
     Console.WriteLine();
     Console.WriteLine("Content Created with Uuid: " + responseContent.Uuid);
@@ -91,11 +92,15 @@ var contentManager = new RgContentManager(authResponse);
     Console.WriteLine("...and Topic: " + topicsResponse.Topics[0].Name);
     Console.WriteLine("...and Tags: " + tagResponse.Tags[0].Title + " and " + tagResponse.Tags[1].Title);
 
+    var responseContentGet = await contentManager.GetContent(responseContent.Uuid);
+
     // upload article
     Console.WriteLine();
     Console.WriteLine("Adding Article...");
     var responseArticle = await contentManager.UploadArticle(responseContent.Uuid, "<p>Today is " + DateTime.Now.ToString("ddd MM yyyy HH:mm:ss") + "</p>");
     Console.WriteLine("Article created with Uuid: " + responseArticle.Uuids[0]);
+
+    var responseArticleGet = await contentManager.GetArticle(responseContent.Uuid);
 
     // upload audio
     Console.WriteLine();
