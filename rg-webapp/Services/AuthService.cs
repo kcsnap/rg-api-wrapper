@@ -7,7 +7,7 @@ namespace RgWebapp.Services
     {
         Authentication authentication;
 
-        public async Task Authenticate(string clientId, string clientSecret, string partnerId)
+        public async Task<RgPartnerAuthResponse> Authenticate(string clientId, string clientSecret, string partnerId)
         {
             authentication = new Authentication(new RgPartnerCredentials()
             {
@@ -17,6 +17,7 @@ namespace RgWebapp.Services
             });
 
             var token = await authentication.GetAccessTokenAsync();
+            return token;
         }
     }
 }

@@ -1,0 +1,40 @@
+﻿@page "/wellbeing"
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using RgWebapp.Components
+@using RgWebapp.Services
+@using rg_wellbeing.Auth.Models
+@using rg_wellbeing.Content
+@rendermode InteractiveServer
+@inject ProtectedSessionStorage ProtectedSessionStore
+
+<PageTitle>Wellbeing</PageTitle>
+
+<h3>Wellbeing</h3>
+
+<p>Select the following options to start uploading content...</p>
+
+<div>
+    <h4>Providers</h4>
+    <ul>
+        <li><a href="/wellbeing/providers/mental-health">Mental Health</a></li>
+        <li><a href="/wellbeing/providers/financial-wellbeing">Financial Wellbeing</a></li>
+        <li><a href="/wellbeing/providers/physical-wellbeing">Physical Wellbeing</a></li>
+        <li><a href="/wellbeing/providers/relationships">Relationships</a></li>
+    </ul>
+</div>
+
+@code {
+    RgContentManager rgContentManager;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var token = await ProtectedSessionStore.GetAsync<RgPartnerAuthResponse>(RgSessionKeys.Token);
+     
+        if (token.Success == false || token.Value == null)
+        {
+            throw new InvalidOperationException("You must authenticate before using this page.");
+        }
+
+        rgContentManager = new RgContentManager(token.Value);
+    }
+}
