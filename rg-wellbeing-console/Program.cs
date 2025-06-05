@@ -4,10 +4,11 @@ using rg_wellbeing.Auth.Models;
 using rg_wellbeing.Content;
 
 /* SUGGESTIONS - Documentation updates or other enhancements to simplify the onboarding of BUs
-* > Accept headers clearly defined
-* > Steps to view simple article uploaded on the wellbeing platform
-* > Make postman files publically available https://edenred-my.sharepoint.com/:u:/p/ventsi_boyadzhiev/EY6eRZwPY9VHmhEelT1nq2MBbivcG1ezS1KvuaftlwRNCw?e=RrcV0f
-*/
+ * > Accept headers clearly defined - 'json' in some places
+ * > GET request for generated content to be documented
+ * > Steps to view simple article uploaded on the wellbeing platform
+ * > Make postman files publically available https://edenred-my.sharepoint.com/:u:/p/ventsi_boyadzhiev/EY6eRZwPY9VHmhEelT1nq2MBbivcG1ezS1KvuaftlwRNCw?e=RrcV0f
+ */
 
 // Example URL of wellbeing for this BU (login via okta)
 // https://site25398.testing.aws.rewardgateway.net/WellbeingCentre/topic/7

@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{02EA681E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rg-wellbeing_tests", "Tests\rg-wellbeing_tests\rg-wellbeing_tests.csproj", "{CA580608-DD5A-483E-B218-8D0E1C72E382}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rg-webapp", "rg-webapp\rg-webapp.csproj", "{AAD043BB-FE1E-4693-AD7E-5CE3D190E19D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{CA580608-DD5A-483E-B218-8D0E1C72E382}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA580608-DD5A-483E-B218-8D0E1C72E382}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA580608-DD5A-483E-B218-8D0E1C72E382}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAD043BB-FE1E-4693-AD7E-5CE3D190E19D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAD043BB-FE1E-4693-AD7E-5CE3D190E19D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAD043BB-FE1E-4693-AD7E-5CE3D190E19D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAD043BB-FE1E-4693-AD7E-5CE3D190E19D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

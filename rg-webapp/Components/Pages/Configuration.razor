@@ -1,0 +1,67 @@
+﻿@page "/configuration"
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using RgWebapp.Components
+@using RgWebapp.Services
+@rendermode InteractiveServer
+@inject ProtectedSessionStorage ProtectedSessionStore
+
+<PageTitle>Configuration</PageTitle>
+
+<h3>Configuration</h3>
+
+<p>Please enter the following information and 'validate' to unlock additional API functionality.</p>
+
+<EditForm OnSubmit="@OnFormSubmit" Model="@configOptions">
+    <div class="form-group">
+        <label for="ClientId">Client Id</label>
+        <InputText @bind-Value=configOptions.ClientId class="form-control" id="ClientId" />
+    </div>
+    <div class="form-group">
+        <label for="ClientSecret">Client Secret</label>
+        <InputText @bind-Value=configOptions.ClientSecret class="form-control" id="ClientSecret" />
+    </div>
+    <div class="form-group">
+        <label for="PartnerId">Partner Id</label>
+        <InputText @bind-Value=configOptions.PartnerId class="form-control" id="ClientPartnerIdId" />
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Validate</button>
+    </div>
+</EditForm>
+
+<div class="@((showError.HasValue && !showError.Value) ? string.Empty : "hidden") alert alert-success" role="alert">
+    Authenticated!
+</div>
+<div class="@((showError.HasValue && showError.Value) ? string.Empty : "hidden") alert alert-danger" role="alert">
+    @errorMessage
+</div>
+
+@code {
+    AuthService authService = new AuthService();
+    ConfigOptionsViewModel configOptions = new ConfigOptionsViewModel();
+    string errorMessage = string.Empty;
+    bool? showError;
+
+    async Task OnFormSubmit(EditContext editContext)
+    {
+        try
+        {
+            var tokenResponse = await authService.Authenticate(configOptions.ClientId, configOptions.ClientSecret, configOptions.PartnerId);
+            await ProtectedSessionStore.SetAsync(RgSessionKeys.Token, tokenResponse);
+
+            showError = false;
+        }
+        catch(Exception ex)
+        {
+            errorMessage = ex.Message;
+            showError = true;
+        }
+    }
+
+    class ConfigOptionsViewModel
+    {
+        public string ClientId { get; set; }
+        public string ClientSecret { get; set; }
+        public string PartnerId { get; set; }
+    }
+}
