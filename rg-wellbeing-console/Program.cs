@@ -4,14 +4,17 @@ using rg_wellbeing.Auth.Models;
 using rg_wellbeing.Content;
 
 /* SUGGESTIONS - Documentation updates or other enhancements to simplify the onboarding of BUs
- * > Accept headers clearly defined
- * > Steps to view simple article uploaded on the wellbeing platform
- * > Make postman files publically available https://edenred-my.sharepoint.com/:u:/p/ventsi_boyadzhiev/EY6eRZwPY9VHmhEelT1nq2MBbivcG1ezS1KvuaftlwRNCw?e=RrcV0f
- */
+* > Accept headers clearly defined
+* > Steps to view simple article uploaded on the wellbeing platform
+* > Make postman files publically available https://edenred-my.sharepoint.com/:u:/p/ventsi_boyadzhiev/EY6eRZwPY9VHmhEelT1nq2MBbivcG1ezS1KvuaftlwRNCw?e=RrcV0f
+*/
 
 // Example URL of wellbeing for this BU (login via okta)
 // https://site25398.testing.aws.rewardgateway.net/WellbeingCentre/topic/7
 // ClientName = "SmartHub Demo Site [Staging]"
+
+// Use this instead due to issue with above:
+// https://site40651.testing.aws.rewardgateway.net
 
 // manage secrets
 IConfigurationRoot config = new ConfigurationBuilder()
@@ -67,19 +70,25 @@ var contentManager = new RgContentManager(authResponse, true);
     // get available tags
     var tagResponse = await contentManager.GetTags();
 
+    // filter relevant tags
+    var relevantTags = tagResponse.Tags.Where(t => t.Title.Contains("5 min") || t.Title.Contains("10 min")).ToList();
+
     var contentCreation = new RgWellbeingContentCreateRequest()
     {
-        Thumbnail = "https://www.snapwire.co.uk/media/2yefydvg/square-logo.png",
-        Description = "Join Coxy in this 15-minute video",
-        Title = "Ear tension release",
+        Thumbnail = "https://images.unsplash.com/photo-1746457002269-106424d702e4?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxN3x8fGVufDB8fHx8fA%3D%3D",
+        Description = DateTime.Now.ToString("ddd MM yyyy HH:mm:ss") + "Join Coxy in this 15-minute video",
+        Title = DateTime.Now.ToString("ddd MM yyyy HH:mm:ss") + " Ear tension release",
         ContentType = "article",
-        Provider = "f609e4ae-977d-11ef-8b28-023f2f4bd5f5", // providersResponse.Providers[0].Uuid,
-        TopicUuid = topicsResponse.Topics[1].Uuid, // 0 is 'Featured' - don't reuse this
+        Provider = providersResponse.Providers[0].Uuid,
+        TopicUuid = topicsResponse.Topics[1].Uuid, // 0 is 'Featured' - don't reuse this, 1 is workout
         LanguageCode = "en",
         TagIds = new List<string> // default to first 2 tags for now...
         {
-            tagResponse.Tags[0].Uuid,
-            tagResponse.Tags[1].Uuid
+            "f417fca0-52a9-4701-837a-2a7c4509f17a",
+            "45be55a9-b733-41b4-91a3-ce111e34c3c5",
+            "50c38c1b-3476-4eab-bb71-c0dd2c94a29d"
+            //relevantTags[0].Uuid,
+            //relevantTags[1].Uuid
         }
     };
 
@@ -89,10 +98,22 @@ var contentManager = new RgContentManager(authResponse, true);
     Console.WriteLine();
     Console.WriteLine("Content Created with Uuid: " + responseContent.Uuid);
     Console.WriteLine("...to Provider: " + providersResponse.Providers[0].Name);
-    Console.WriteLine("...and Topic: " + topicsResponse.Topics[0].Name);
+    Console.WriteLine("...and Topic: " + topicsResponse.Topics[1].Name);
     Console.WriteLine("...and Tags: " + tagResponse.Tags[0].Title + " and " + tagResponse.Tags[1].Title);
 
-    var responseContentGet = await contentManager.GetContent(responseContent.Uuid);
+    //var responseContentGet = await contentManager.GetContent(responseContent.Uuid);
+
+    // update content
+    Console.WriteLine();
+    Console.WriteLine("Update Content...");
+    contentCreation.Title = "UPDATED " + DateTime.Now.ToString("ddd MM yyyy HH:mm:ss") + " Ear tension release";
+    contentCreation.Description = "UPDATED " + DateTime.Now.ToString("ddd MM yyyy HH:mm:ss") + " Join Coxy in this 15-minute video";
+    var updatedContent = await contentManager.ChangeContent(responseContent.Uuid, contentCreation);
+    Console.WriteLine("Content udpated with Uuid: " + updatedContent[0].Uuid);
+
+    //// get updated content
+    //var updatedContentGet = await contentManager.GetContent(responseContent.Uuid);
+    //Console.WriteLine();
 
     // upload article
     Console.WriteLine();
@@ -100,7 +121,18 @@ var contentManager = new RgContentManager(authResponse, true);
     var responseArticle = await contentManager.UploadArticle(responseContent.Uuid, "<p>Today is " + DateTime.Now.ToString("ddd MM yyyy HH:mm:ss") + "</p>");
     Console.WriteLine("Article created with Uuid: " + responseArticle.Uuids[0]);
 
-    var responseArticleGet = await contentManager.GetArticle(responseContent.Uuid);
+    //// get article
+    //var responseArticleGet = await contentManager.GetArticle(responseContent.Uuid);
+
+    // update article
+    Console.WriteLine();
+    Console.WriteLine("Update Article...");
+    var updatedArticle = await contentManager.ChangeArticle(responseContent.Uuid, "<p>UPDATED ARTICLE Today is " + DateTime.Now.ToString("ddd MM yyyy HH:mm:ss") + "</p>");
+    Console.WriteLine("Article udpated with Uuid: " + responseArticle.Uuids[0]);
+
+    // get updated article
+    var updatedArticleGet = await contentManager.GetArticle(responseContent.Uuid);
+    Console.WriteLine();
 
     // upload audio
     Console.WriteLine();

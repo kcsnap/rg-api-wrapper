@@ -53,13 +53,22 @@ namespace rg_wellbeing.Auth.Models
         public List<string> TagIds { get; set; }
     }
 
+    public class RgWellbeingContentCreateResponse
+    {
+        public string Uuid { get; set; }
+    }
+    public class RgWellbeingContentPatchResponse
+    {
+        public string Uuid { get; set; }
+    }
     public class RgWellbeingArticleUploadResponse
     {
         public string[] Uuids { get; set; }
     }
-    public class RgWellbeingContentCreateResponse
+    public class RgWellbeingArticlePatchResponse
     {
-        public string Uuid { get; set; }
+        // THIS IS RETURNING A FULL OBJECT AND NOT UUID LIKE THE ABOVE
+        public string[] Uuids { get; set; }
     }
 
     public class RGWellbeingTag

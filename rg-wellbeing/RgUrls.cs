@@ -12,10 +12,11 @@ namespace rg_wellbeing
         private static string baseUrl = "https://api.testing.aws.rewardgateway.net"; // TEST
         //private static string baseUrl = "https://api.rewardgateway.net"; // PROD
 
-        public static string WellbeingTags => baseUrl + "/content/wellbeing/tags?limit=100";
+        public static string WellbeingTags => baseUrl + "/content/wellbeing/tags?limit=500";
         public static string WellbeingTopics => baseUrl + "/content/wellbeing/topics";
         public static string WellbeingProviders => baseUrl + "/content/providers";
         public static string WellbeingContent => baseUrl + "/content/wellbeing";
-        public static string WellbeingContentArticle => baseUrl + "/content/wellbeing/article/{0}/content";
+        public static string WellbeingContentPatch => baseUrl + "/content/wellbeing/{0}";
+        public static string WellbeingContentArticle => baseUrl + "/content/wellbeing/article/{0}/content";        
     }
 }

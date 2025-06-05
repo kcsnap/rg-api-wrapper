@@ -77,26 +77,38 @@ namespace rg_wellbeing.Content
         public async Task<RgWellbeingContentCreateResponse> CreateContent(RgWellbeingContentCreateRequest wellbeingContent)
         {
             string json = JsonConvert.SerializeObject(wellbeingContent);
-            HttpContent httpContent = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync(RgUrls.WellbeingContent, httpContent);
+            return await WellbeingApiPost<RgWellbeingContentCreateResponse>(RgUrls.WellbeingContent, json);
 
-            if (response.IsSuccessStatusCode)
-            {
-                // Read the response content as a string
-                var result = await response.Content.ReadAsStringAsync();
-                var wellbeingResponse = JsonConvert.DeserializeObject<RgWellbeingContentCreateResponse>(result);
-                return wellbeingResponse;
-            }
-            else
-            {
-                // Handle the error response
-                throw new Exception($"Error: {response.StatusCode}, {await response.Content.ReadAsStringAsync()}");
-            }
+
+            //string json = JsonConvert.SerializeObject(wellbeingContent);
+            //HttpContent httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+            //var response = await _httpClient.PostAsync(RgUrls.WellbeingContent, httpContent);
+
+            //if (response.IsSuccessStatusCode)
+            //{
+            //    // Read the response content as a string
+            //    var result = await response.Content.ReadAsStringAsync();
+            //    var wellbeingResponse = JsonConvert.DeserializeObject<RgWellbeingContentCreateResponse>(result);
+            //    return wellbeingResponse;
+            //}
+            //else
+            //{
+            //    // Handle the error response
+            //    throw new Exception($"Error: {response.StatusCode}, {await response.Content.ReadAsStringAsync()}");
+            //}
+        }
+
+        public async Task<RgWellbeingContentPatchResponse[]> ChangeContent(string uuid, RgWellbeingContentCreateRequest wellbeingContent)
+        {
+            string json = JsonConvert.SerializeObject(wellbeingContent);
+            var url = string.Format(RgUrls.WellbeingContentPatch, uuid);
+
+            return await WellbeingApiPatch<RgWellbeingContentPatchResponse[]>(url, json);
         }
 
         public async Task<RgWellbeingContentCreateResponse> GetContent(string uuid)
         {
-            var url = string.Format(RgUrls.WellbeingContentArticle, uuid);
+            var url = string.Format(RgUrls.WellbeingContentPatch, uuid);
 
             return await WellbeingApiGet<RgWellbeingContentCreateResponse>(url);
         }
@@ -134,36 +146,55 @@ namespace rg_wellbeing.Content
                     "\"article\": \"" + htmlAsString + "\"" +
                 "}" +
             "}";
+            //string json = JsonConvert.SerializeObject(request);
             var url = string.Format(RgUrls.WellbeingContentArticle, uuid);
 
             return await WellbeingApiPost<RgWellbeingArticleUploadResponse>(url, request);
+        }
 
-            //string json = JsonSerializer.Serialize(request);
-            //HttpContent httpContent = new StringContent(json, Encoding.UTF8, "application/json");
 
-            //var response = await _httpClient.PostAsync(string.Format(RgUrls.WellbeingContentArticle, uuid), httpContent);
+        public async Task<RgWellbeingArticlePatchResponse> ChangeArticle(string uuid, string htmlAsString)
+        {
+            var request = "{" +
+                "\"body\": {" +
+                    "\"article\": \"" + htmlAsString + "\"" +
+                "}" +
+            "}";
+            var url = string.Format(RgUrls.WellbeingContentArticle, uuid);
 
-            //if (response.IsSuccessStatusCode)
-            //{
-            //    // Read the response content as a string
-            //    var result = await response.Content.ReadAsStringAsync();
-            //    var wellbeingResponse = JsonSerializer.Deserialize<RgWellbeingArticleUploadResponse>(result);
-            //    return wellbeingResponse;
-            //}
-            //else
-            //{
-            //    // Handle the error response
-            //    throw new Exception($"Error: {response.StatusCode}, {await response.Content.ReadAsStringAsync()}");
-            //}
+            return await WellbeingApiPatch<RgWellbeingArticlePatchResponse>(url, request);
+
         }
 
         private async Task<T> WellbeingApiPost<T>(string url, string body)
         {            
-            string json = JsonConvert.SerializeObject(body);
+            //string json = JsonConvert.SerializeObject(body);
             HttpContent httpContent = new StringContent(body, Encoding.UTF8, "application/json");
 
             // make the call
             var response = await _httpClient.PostAsync(url, httpContent);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Read the response content as a string
+                var result = await response.Content.ReadAsStringAsync();
+                var deserialisedResult = JsonConvert.DeserializeObject<T>(result);
+                return deserialisedResult;
+            }
+            else
+            {
+                // Handle the error response
+                throw new Exception($"Error: {response.StatusCode}, {await response.Content.ReadAsStringAsync()}");
+            }
+        }
+    
+        private async Task<T> WellbeingApiPatch<T>(string url, string body)
+        {
+            string json = JsonConvert.SerializeObject(body);
+            HttpContent httpContent = new StringContent(body, Encoding.UTF8, "application/json");
+
+            // make the call
+            var response = await _httpClient.PatchAsync(url, httpContent);
 
             if (response.IsSuccessStatusCode)
             {
