@@ -11,7 +11,7 @@
 
 <p>Please enter the following information and 'validate' to unlock additional API functionality.</p>
 
-<EditForm OnSubmit="@OnFormSubmit" Model="@configOptions">
+<EditForm OnSubmit="@OnFormSubmit" Model="@configOptions" class="@((!showError.HasValue || showError.Value) ? string.Empty : "hidden")" >
     <div class="form-group">
         <label for="ClientId">Client Id</label>
         <InputText @bind-Value=configOptions.ClientId class="form-control" id="ClientId" />

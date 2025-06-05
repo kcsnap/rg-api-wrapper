@@ -1,5 +1,6 @@
 ﻿@page "/wellbeing"
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Newtonsoft.Json
 @using RgWebapp.Components
 @using RgWebapp.Services
 @using rg_wellbeing.Auth.Models
@@ -9,29 +10,190 @@
 
 <PageTitle>Wellbeing</PageTitle>
 
-<h3>Wellbeing</h3>
+<h2>Wellbeing</h2>
 
-<p>Select the following options to start uploading content...</p>
+<p>Description tbd</p>
 
 <div>
-    <h4>Providers</h4>
-    <ul>
-        tbd...
-    </ul>
+    <table>
+        <tr>
+            <td style="width:70%;vertical-align:top">
+                <h4>Guide</h4>
+                <p>1. Create content placeholder...</p>
+                <EditForm OnSubmit="@OnContentCreateSubmit" Model="@wellbeingContent">
+                    <div class="form-group">
+                        <InputTextArea @bind-Value=wellbeingContent.ContentCreateRequestJson class="form-control json-format" id="WellbeingContentInput" />
+                    </div>                    
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Create Content</button>
+                    </div>
+                    <div class="@((wellbeingContent.ContentCreateResponse != null) ? string.Empty : "hidden") alert alert-success" role="alert">
+                        Content Placeholder created successfully with Id: @wellbeingContent.ContentCreateResponse?.Uuid
+                    </div>
+                </EditForm>
+
+                <p>2. Create article within Content...</p>
+                <EditForm OnSubmit="@OnArticleCreateSubmit" Model="@wellbeingContent">
+                    <div class="form-group">
+                        <InputTextArea @bind-Value=wellbeingContent.ArticleHtmlRequest class="form-control json-format" id="WellbeingArticleInput" />
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Create Article</button>
+                    </div>
+                    <div class="@((wellbeingContent.ArticleCreateResponse != null) ? string.Empty : "hidden") alert alert-success" role="alert">
+                        Article created successfully with Id: @wellbeingContent.ArticleCreateResponse?.Uuids[0]
+                    </div>
+                </EditForm>
+            </td>
+            <td style="font-size:8pt">
+                <h5>Providers</h5>
+                <ul>
+                    @if (providersResponse != null)
+                    {
+                        @foreach (var provider in providersResponse.Providers.OrderBy(p => p.Name))
+                        {
+                            <li>
+                                <strong>@provider.Name</strong> - @provider.Uuid
+                            </li>
+                        }
+                    }
+                </ul>
+
+                <h5>Topics</h5>
+                <ul>
+                    @if (topicsResponse != null)
+                    {
+                        @foreach (var topic in topicsResponse.Topics.OrderBy(p => p.Name))
+                        {
+                            <li>
+                                <strong>@topic.Name</strong> - @topic.Uuid
+                            </li>
+                        }
+                    }
+                </ul>
+
+                <h5>Tags</h5>
+                <ul>
+                    @if (tagsResponse != null)
+                    {
+                        @foreach (var tag in tagsResponse.Tags.OrderBy(p => p.Title))
+                        {
+                            <li>
+                                <strong>@tag.Title</strong> - @tag.Uuid
+                            </li>
+                        }
+                    }
+                </ul>
+            </td>
+        </tr>
+    </table>
 </div>
 
 @code {
     RgContentManager rgContentManager;
 
-    protected override async Task OnInitializedAsync()
+    RGWellbeingProviderResponse providersResponse;
+    RGWellbeingTopicsResponse topicsResponse;
+    RGWellbeingTagsResponse tagsResponse;
+
+    WellbeingContentViewModel wellbeingContent = new WellbeingContentViewModel();
+
+    ProtectedBrowserStorageResult<RgPartnerAuthResponse?> token;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var token = await ProtectedSessionStore.GetAsync<RgPartnerAuthResponse>(RgSessionKeys.Token);
-     
-        if (token.Success == false || token.Value == null)
+        var token = await ProtectedSessionStore.GetAsync<RgPartnerAuthResponse?>(RgSessionKeys.Token);
+
+        if (!token.Success || token.Value == null)
         {
             throw new InvalidOperationException("You must authenticate before using this page.");
         }
+         
+        if (firstRender)
+        {
+            rgContentManager = new RgContentManager(token.Value);
+            providersResponse = await rgContentManager.GetProviders();
+            topicsResponse = await rgContentManager.GetTopics();
+            tagsResponse = await rgContentManager.GetTags();
+        }
 
-        rgContentManager = new RgContentManager(token.Value);
+        // default content creation
+        wellbeingContent.ContentCreateRequest = new RgWellbeingContentCreateRequest()
+        {
+            Thumbnail = "https://images.unsplash.com/photo-1746457002269-106424d702e4?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxN3x8fGVufDB8fHx8fA%3D%3D",
+            Description = DateTime.Now.ToString("ddd MM yyyy HH:mm:ss") + "Join Coxy in this 15-minute video",
+            Title = DateTime.Now.ToString("ddd MM yyyy HH:mm:ss") + " Ear tension release",
+            ContentType = "article",
+            Provider = providersResponse.Providers[0].Uuid,
+            TopicUuid = topicsResponse.Topics[1].Uuid, // 0 is 'Featured' - don't reuse this, 1 is workout
+            LanguageCode = "en",
+            TagIds = new List<string> // default to first 2 tags for now...
+            {
+                "f417fca0-52a9-4701-837a-2a7c4509f17a",
+                "45be55a9-b733-41b4-91a3-ce111e34c3c5",
+                "50c38c1b-3476-4eab-bb71-c0dd2c94a29d"
+                //relevantTags[0].Uuid,
+                //relevantTags[1].Uuid
+            }
+        };
+
+        // default article content
+        wellbeingContent.ArticleHtmlRequest = "<p>Today is " + DateTime.Now.ToString("ddd MM yyyy HH:mm:ss") + "</p>";
+
+        if (firstRender) StateHasChanged();
+    }
+
+    async Task OnContentCreateSubmit(EditContext editContext)
+    {
+        try
+        {
+            // create content
+            wellbeingContent.ContentCreateResponse = await rgContentManager.CreateContent(wellbeingContent.ContentCreateRequest);
+        }
+        catch (Exception ex)
+        {
+            // errorMessage = ex.Message;
+            // showError = true;
+        }
+    }
+
+    async Task OnArticleCreateSubmit(EditContext editContext)
+    {
+        try
+        {
+            // create content
+            wellbeingContent.ArticleCreateResponse = await rgContentManager.UploadArticle(wellbeingContent.ContentCreateResponse.Uuid, wellbeingContent.ArticleHtmlRequest);
+        }
+        catch (Exception ex)
+        {
+            // errorMessage = ex.Message;
+            // showError = true;
+        }
+    }
+
+    public class WellbeingContentViewModel
+    {
+        public RgWellbeingContentCreateResponse ContentCreateResponse { get; set; }
+        public RgWellbeingContentCreateRequest ContentCreateRequest { get; set; }
+        public string ContentCreateRequestJson 
+        { 
+            get { return JsonConvert.SerializeObject(ContentCreateRequest, Formatting.Indented); }
+            set
+            {
+                try
+                {
+                    ContentCreateRequest = JsonConvert.DeserializeObject<RgWellbeingContentCreateRequest>(value) ?? new RgWellbeingContentCreateRequest();
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException("Invalid content create request JSON: " + ex.Message);
+                }
+            }
+        }
+
+        public RgWellbeingArticleUploadResponse ArticleCreateResponse { get; set; }
+        public string ArticleHtmlRequest { get; set; }
+
+        public string Content { get; set; } = string.Empty;
     }
 }

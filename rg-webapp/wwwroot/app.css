@@ -57,3 +57,9 @@ h1:focus {
 .hidden {
     display: none;
 }
+
+.json-format {
+    font-family:'Courier New';
+    font-size:10pt;
+    height:250pt;
+}

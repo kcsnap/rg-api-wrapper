@@ -139,11 +139,11 @@ namespace rg_wellbeing.Content
 
             return await WellbeingApiGet<RgWellbeingArticleUploadResponse>(url);
         }
-        public async Task<RgWellbeingArticleUploadResponse> UploadArticle(string uuid, string htmlAsString)
+        public async Task<RgWellbeingArticleUploadResponse> UploadArticle(string uuid, string articleHtmlAsString)
         {
             var request = "{" +
                 "\"body\": {" +
-                    "\"article\": \"" + htmlAsString + "\"" +
+                    "\"article\": \"" + articleHtmlAsString + "\"" +
                 "}" +
             "}";
             //string json = JsonConvert.SerializeObject(request);
