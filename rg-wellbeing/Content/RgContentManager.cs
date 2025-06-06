@@ -153,11 +153,11 @@ namespace rg_wellbeing.Content
         }
 
 
-        public async Task<RgWellbeingArticlePatchResponse> ChangeArticle(string uuid, string htmlAsString)
+        public async Task<RgWellbeingArticlePatchResponse> ChangeArticle(string uuid, string articleHtmlAsString)
         {
             var request = "{" +
                 "\"body\": {" +
-                    "\"article\": \"" + htmlAsString + "\"" +
+                    "\"article\": \"" + articleHtmlAsString + "\"" +
                 "}" +
             "}";
             var url = string.Format(RgUrls.WellbeingContentArticle, uuid);
