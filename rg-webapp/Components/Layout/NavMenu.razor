@@ -16,17 +16,29 @@
 
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="configuration">
-                <span class="bi bi-config-fill-nav-menu" aria-hidden="true"></span> Configuration
+                <span class="bi bi-config-fill-nav-menu-1" aria-hidden="true"></span> Configuration
             </NavLink>
         </div>
 
         <div class="nav-item px-3">
+            <div class="nav-link" >
+                <span class="bi bi-config-fill-nav-menu-2" aria-hidden="true"></span> Wellbeing
+            </div>
+        </div>
+
+        <div class="nav-item navlink-submenu px-3">
             <NavLink class="nav-link" href="wellbeing">
-                <span class="bi bi-config-fill-nav-menu" aria-hidden="true"></span> Wellbeing
+                ...Create
             </NavLink>
         </div>
+        <div class="nav-item navlink-submenu px-3">
+            <NavLink class="nav-link navlink-submenu" href="wellbeingview">
+                ...View
+            </NavLink>
 
-        <div class="nav-item px-3">
+        </div>
+
+        @* <div class="nav-item px-3">
             <NavLink class="nav-link" href="counter">
                 <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
             </NavLink>
@@ -36,7 +48,11 @@
             <NavLink class="nav-link" href="weather">
                 <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
             </NavLink>
-        </div>
+        </div> *@
     </nav>
 </div>
 
+
+@code {
+    private bool expandSubNav = true;
+}

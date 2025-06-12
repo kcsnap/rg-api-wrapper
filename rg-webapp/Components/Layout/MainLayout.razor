@@ -1,4 +1,11 @@
-﻿@inherits LayoutComponentBase
+﻿@using RgWebapp.Services
+@using BlazorBootstrap;
+@inherits LayoutComponentBase
+@inject LayoutService LayoutService;
+@* 
+<div id="blazor-layout-msg" class="@authentication">
+    User is Currently NOT Authenticated
+</div> *@
 
 <div class="page">
     <div class="sidebar">
@@ -21,3 +28,22 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+@code {
+    protected override void OnParametersSet() =>
+        this.LayoutService.AuthMessageChanged += this.AuthChanged;
+
+    private async void AuthChanged(object? sender, EventArgs e)
+    {
+        await InvokeAsync(() =>
+        {
+            authentication = "authenticated";
+            StateHasChanged();
+        });
+    }
+
+    private string authentication = "not-authenticated";
+
+    public void Dispose()
+        => this.LayoutService.AuthMessageChanged -= this.AuthChanged;
+}

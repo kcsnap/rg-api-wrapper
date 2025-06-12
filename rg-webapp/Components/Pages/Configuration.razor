@@ -3,6 +3,8 @@
 @using RgWebapp.Components
 @using RgWebapp.Services
 @rendermode InteractiveServer
+
+@inject LayoutService LayoutService;
 @inject ProtectedSessionStorage ProtectedSessionStore
 
 <PageTitle>Configuration</PageTitle>
@@ -38,6 +40,7 @@
 
 @code {
     AuthService authService = new AuthService();
+
     ConfigOptionsViewModel configOptions = new ConfigOptionsViewModel();
     string errorMessage = string.Empty;
     bool? showError;
@@ -46,6 +49,11 @@
     {
         try
         {
+            authService.AuthChanged += (sender, args) =>
+            {
+                this.LayoutService.ChangeAuth();
+            };
+
             var tokenResponse = await authService.Authenticate(configOptions.ClientId, configOptions.ClientSecret, configOptions.PartnerId);
             await ProtectedSessionStore.SetAsync(RgSessionKeys.Token, tokenResponse);
 

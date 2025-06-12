@@ -1,0 +1,66 @@
+﻿@page "/wellbeingview"
+@using BlazorBootstrap
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Newtonsoft.Json
+@using RgWebapp.Components
+@using RgWebapp.Services
+@using rg_wellbeing.Auth.Models
+@using rg_wellbeing.Content
+@rendermode InteractiveServer
+@inject ProtectedSessionStorage ProtectedSessionStore
+
+<PageTitle>Wellbeing</PageTitle>
+
+<h2>Wellbeing</h2>
+
+<p>View all live wellbeing content</p>
+
+<div>
+    <h4>Articles</h4>
+    <div></div>
+    <div class="@(String.IsNullOrEmpty(ErrorMsg) ? "hidden" : string.Empty) alert alert-success" role="alert">
+        @ErrorMsg
+    </div>
+</div>
+
+@code {
+    RgContentManager rgContentManager;
+
+    WellbeingContentViewModel wellbeingContent = new WellbeingContentViewModel();
+    public string ErrorMsg { get; set; }
+    ProtectedBrowserStorageResult<RgPartnerAuthResponse?> token;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        token = await ProtectedSessionStore.GetAsync<RgPartnerAuthResponse?>(RgSessionKeys.Token);
+
+        if (!token.Success || token.Value == null)
+        {
+            throw new InvalidOperationException("You must authenticate before using this page.");
+        }
+
+        if (firstRender)
+        {
+            try
+            {
+                rgContentManager = new RgContentManager(token.Value);
+                var articles = await rgContentManager.GetArticlesAsync();
+            }
+            catch(Exception ex)
+            {
+                ErrorMsg = ex.Message;
+                StateHasChanged();
+            }
+        }
+    }
+
+    public class WellbeingContentViewModel
+    {
+        public IList<WellbeingArticle> Articles { get; set; }
+    }
+
+    public class WellbeingArticle
+    {
+        public string Title { get; set; }
+    }
+}

@@ -1,0 +1,39 @@
+﻿@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using rg_wellbeing.Auth.Models
+@using rg_wellbeing.Content
+@inject ProtectedSessionStorage ProtectedSessionStore
+
+<h2>Providers</h2>
+<h3>Add Provider</h3>
+
+<EditForm OnSubmit="@OnProviderCreateSubmit" Model="@providerContent">
+    <div class="form-group">
+        <InputTextArea @bind-Value=providerContent.ContentCreateRequestJson class="form-control json-format" id="ProviderInput" />
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Create Provider</button>
+    </div>
+    <div class="@((providerContent.ContentCreateResponse != null) ? string.Empty : "hidden") alert alert-success" role="alert">
+        Provider created successfully with Id: @providerContent.ContentCreateResponse?.Uuid
+    </div>
+</EditForm>
+
+@code {
+    RgContentManager rgContentManager;
+    ProtectedBrowserStorageResult<RgPartnerAuthResponse?> token;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        token = await ProtectedSessionStore.GetAsync<RgPartnerAuthResponse?>(RgSessionKeys.Token);
+
+        if (!token.Success || token.Value == null)
+        {
+            throw new InvalidOperationException("You must authenticate before using this page.");
+        }
+
+        if (firstRender)
+        {
+            rgContentManager = new RgContentManager(token.Value, true);
+        }
+    }
+}

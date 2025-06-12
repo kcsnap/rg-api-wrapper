@@ -1,0 +1,39 @@
+
+
+=====================================================
+CREATE CONTENT RESPONSE <-- looks good
+"{\"uuid\":\"d1f93169-731a-466b-b6a6-ed49c08bfd45\"}"
+
+UPDATE CONTENT REPONSE <-- Why outer array?
+"[{\"uuid\":\"1a265984-5137-476d-9361-3484ce5f424a\"}]"
+
+CREATE ARTICLE RESPONSE <-- why inner array? why plural uuid? Can only add 1 article at a time
+"{\"uuids\":[\"76b11317-049f-46ef-a73b-eaec62d955d7\"]}"
+
+UPDATE ARTICLE RESPONSE <-- why full object response here when prior has been just uuid?
+{"content":{"uuid":"76b11317-049f-46ef-a73b-eaec62d955d7","topicUuid":"2b29346b-8846-4ac4-87f2-b42b6b57997e","title":"Wed 06 2025 16:50:53 Ear tension release","thumbnail":"https:\/\/wellbeing-storage-staging.testing.aws.rewardgateway.net\/workout\/thumbnail\/76b11317-049f-46ef-a73b-eaec62d955d7.jpeg","contentType":"article","description":"Wed 06 2025 16:50:53Join Coxy in this 15-minute video","tags":[{"tagUuid":"f417fca0-52a9-4701-837a-2a7c4509f17a","title":"10 min"},{"tagUuid":"45be55a9-b733-41b4-91a3-ce111e34c3c5","title":"10 mins"},{"tagUuid":"50c38c1b-3476-4eab-bb71-c0dd2c94a29d","title":"10 min"}],"detailedContent":{"articleData":{"content":"<p>UPDATED ARTICLE Today is Wed 06 2025 16:51:58<\/p>"}}}}
+
+Q> All 4 responses in different format - is there a good reason for this? Would expect all to be a single Uuid although preference would be for ALL to return full object with success status flag...
+
+WHEN ADDING RECIPE <-- Why plural and array when can only add one?
+"{\"uuids\":[\"4d522902-52bf-4c04-aacd-fa6ebeec8363\"]}"
+--> NOT VISIBLE IN WELLBEING CENTRE UNDER RECIPE TAB  
+
+WHY IS PROCESS TO CREATE CONTENT (Acts as a container...) FOR SPECIFIC CONTENT RATHER THAN JUST UPLOAD ALL IN 1 GO? APPEARS TO BE 2 CALSS TO DO WHAT COULD BE DONE IN 1.
+
+
+
+=====================================================
+"{\"code\":0,\"message\":\"Invalid article payload\",\"details\":[\"This value is not valid.\"]}"
+WHAT IS THE INVALID VALUE? Returned When supplying invalid payload - should this be more specific?
+
+=====================================================
+UNABLE TO GET CONTENT USING ID JUST UPLOADED? Why?
+i.e. "https://api.testing.aws.rewardgateway.net/content/wellbeing/fd60238f-8c7e-4a33-8927-64170e5cde0e"
+'Error: NotFound, {"code":0,"message":"Not Found","details":[]}'
+
+We can GET article using ID. However, neither are documented...should they be?
+
+=====================================================
+
+- General wellbeing api documentation needs aligning with https://docs.rewardgateway.net/docs/content-ingestion-api-usage-guide

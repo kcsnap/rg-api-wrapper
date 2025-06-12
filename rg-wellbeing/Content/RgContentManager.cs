@@ -113,6 +113,13 @@ namespace rg_wellbeing.Content
             return await WellbeingApiGet<RgWellbeingContentCreateResponse>(url);
         }
 
+        public async Task<RgWellbeingArticlesResponse> GetArticlesAsync()
+        {
+            var url = string.Format(RgUrls.WellbeingContent) + "?offset=0&limit=100&topicId=10";
+
+            return await WellbeingApiGet<RgWellbeingArticlesResponse>(url);
+        }
+
         public async Task<RgWellbeingContentCreateResponse> DeleteContent(RgWellbeingContentCreateRequest wellbeingContent)
         {            
             string json = JsonConvert.SerializeObject(wellbeingContent);
@@ -151,7 +158,13 @@ namespace rg_wellbeing.Content
 
             return await WellbeingApiPost<RgWellbeingArticleUploadResponse>(url, request);
         }
+        public async Task<RgWellbeingRecipeUploadResponse> UploadRecipe(string uuid, string recipeJsonAsString)
+        {
+            //string json = JsonConvert.SerializeObject(request);
+            var url = string.Format(RgUrls.WellbeingContentRecipe, uuid);
 
+            return await WellbeingApiPost<RgWellbeingRecipeUploadResponse>(url, recipeJsonAsString);
+        }
 
         public async Task<RgWellbeingArticlePatchResponse> ChangeArticle(string uuid, string articleHtmlAsString)
         {
@@ -163,6 +176,14 @@ namespace rg_wellbeing.Content
             var url = string.Format(RgUrls.WellbeingContentArticle, uuid);
 
             return await WellbeingApiPatch<RgWellbeingArticlePatchResponse>(url, request);
+
+        }
+
+        public async Task<RgWellbeingArticleDeleteResponse> DeleteArticle(string uuid, string contentType)
+        {
+            var url = string.Format(RgUrls.WellbeingContentTypeUuid, contentType, uuid);
+
+            return await WellbeingApiDelete<RgWellbeingArticleDeleteResponse>(url);
 
         }
 
@@ -184,7 +205,8 @@ namespace rg_wellbeing.Content
             else
             {
                 // Handle the error response
-                throw new Exception($"Error: {response.StatusCode}, {await response.Content.ReadAsStringAsync()}");
+                var errorDescription = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Error: {response.StatusCode}, {errorDescription}");
             }
         }
     
@@ -195,6 +217,25 @@ namespace rg_wellbeing.Content
 
             // make the call
             var response = await _httpClient.PatchAsync(url, httpContent);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Read the response content as a string
+                var result = await response.Content.ReadAsStringAsync();
+                var deserialisedResult = JsonConvert.DeserializeObject<T>(result);
+                return deserialisedResult;
+            }
+            else
+            {
+                // Handle the error response
+                throw new Exception($"Error: {response.StatusCode}, {await response.Content.ReadAsStringAsync()}");
+            }
+        }
+
+        private async Task<T> WellbeingApiDelete<T>(string url)
+        {
+            // make the call
+            var response = await _httpClient.DeleteAsync(url);
 
             if (response.IsSuccessStatusCode)
             {

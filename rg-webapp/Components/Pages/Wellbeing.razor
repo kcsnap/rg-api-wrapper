@@ -1,4 +1,5 @@
 ﻿@page "/wellbeing"
+@using BlazorBootstrap
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using Newtonsoft.Json
 @using RgWebapp.Components
@@ -19,6 +20,28 @@
         <tr>
             <td style="width:70%;vertical-align:top">
                 <h4>Guide</h4>
+
+                @* <p>0. Select content type...</p>
+                <Dropdown Color="DropdownColor.Primary">
+                    <DropdownToggleButton>Select Content Type</DropdownToggleButton>
+                    <DropdownMenu>
+                        <DropdownItem To="#" Type="DropdownItemType.Link">Article</DropdownItem>
+                        <DropdownItem To="#" Type="DropdownItemType.Link">Recipe</DropdownItem>
+                        <DropdownItem To="#" Type="DropdownItemType.Link">...more coming soon</DropdownItem>
+                    </DropdownMenu>
+                </Dropdown> *@
+
+                <p>0. Load sample request</p>
+                <div class="form-group">
+                    <button @onclick="LoadArticleContent" class="btn btn-secondary">
+                        Load Article
+                    </button>
+                    <button @onclick="LoadRecipeContent" class="btn btn-secondary">
+                        Load Recipe
+                    </button>
+                </div>
+
+
                 <p>1. Create content placeholder...</p>
                 <EditForm OnSubmit="@OnContentCreateSubmit" Model="@wellbeingContent">
                     <div class="form-group">
@@ -32,31 +55,77 @@
                     </div>
                 </EditForm>
 
-                <p>2. Create article within Content...</p>
-                <EditForm OnSubmit="@OnArticleCreateSubmit" Model="@wellbeingContent">
-                    <div class="form-group">
-                        <InputTextArea @bind-Value=wellbeingContent.ArticleHtmlRequest class="form-control json-format" id="WellbeingArticleInput" />
-                    </div>
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary">Create Article</button>
-                    </div>
-                    <div class="@((wellbeingContent.ArticleCreateResponse != null) ? string.Empty : "hidden") alert alert-success" role="alert">
-                        Article created successfully with Id: @wellbeingContent.ArticleCreateResponse?.Uuids[0]
-                    </div>
-                </EditForm>
+                <Tabs>
+                    <Tab Title="Article" Active="true">
+                        <Content>
+                            <p>2. Create article within Content...</p>
+                            <EditForm OnSubmit="@OnArticleCreateSubmit" Model="@wellbeingContent">
+                                <div class="form-group">
+                                    <InputTextArea @bind-Value=wellbeingContent.ArticleHtmlRequest class="form-control json-format" id="WellbeingArticleInput" />
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary">Create Article</button>
+                                </div>
+                                <div class="@((wellbeingContent.ArticleCreateResponse != null) ? string.Empty : "hidden") alert alert-success" role="alert">
+                                    Article created successfully with Id: @wellbeingContent.ArticleCreateResponse?.Uuids[0]
+                                </div>
+                            </EditForm>
 
-                <p>3. Update article within Content...</p>
-                <EditForm OnSubmit="@OnArticleUpdateSubmit" Model="@wellbeingContent">
-                    <div class="form-group">
-                        <InputTextArea @bind-Value=wellbeingContent.UpdatedArticleHtmlRequest class="form-control json-format" id="WellbeingArticleInput" />
-                    </div>
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary">Update Article</button>
-                    </div>
-                    <div class="@((wellbeingContent.ArticleUpdateResponse != null) ? string.Empty : "hidden") alert alert-success" role="alert">
-                        Article updated successfully with Id: @wellbeingContent.ArticleUpdateResponse?.Uuids[0]
-                    </div>
-                </EditForm>
+                            <p>3. Update article within Content...</p>
+                            <EditForm OnSubmit="@OnArticleUpdateSubmit" Model="@wellbeingContent">
+                                <div class="form-group">
+                                    <InputTextArea @bind-Value=wellbeingContent.UpdatedArticleHtmlRequest class="form-control json-format" id="WellbeingArticleInput" />
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary">Update Article</button>
+                                </div>
+                                <div class="@((wellbeingContent.ArticleUpdateResponse != null) ? string.Empty : "hidden") alert alert-success" role="alert">
+                                    Article updated successfully with Id: @wellbeingContent.ArticleUpdateResponse?.content.uuid
+                                </div>
+                            </EditForm>
+
+                            <p>4. Delete article within Content...</p>
+                            <EditForm OnSubmit="@OnArticleDeleteSubmit" Model="@wellbeingContent">
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary">Delete Article</button>
+                                </div>
+                                <div class="@((wellbeingContent.ArticleIsDeleted) ? string.Empty : "hidden") alert alert-success" role="alert">
+                                    Article deleted successfully
+                                </div>
+                            </EditForm>
+                        </Content>
+                    </Tab>
+                    <Tab Title="Recipes">
+                        <Content>
+                            <p>2. Create receipe within Content...</p>
+                            <EditForm OnSubmit="@OnRecipeCreateSubmit" Model="@wellbeingContent">
+                                <div class="form-group">
+                                    <InputTextArea @bind-Value=wellbeingContent.RecipeJsonRequest class="form-control json-format" id="WellbeingRecipeInput" />
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary">Create Recipe</button>
+                                </div>
+                                <div class="@((wellbeingContent.RecipeCreateResponse != null) ? string.Empty : "hidden") alert alert-success" role="alert">
+                                    Recipe created successfully with Id: @wellbeingContent.RecipeCreateResponse?.Uuids[0]
+                                </div>
+                            </EditForm>
+
+                            @*  <p>3. Update article within Content...</p>
+                            <EditForm OnSubmit="@OnArticleUpdateSubmit" Model="@wellbeingContent">
+                                <div class="form-group">
+                                    <InputTextArea @bind-Value=wellbeingContent.UpdatedArticleHtmlRequest class="form-control json-format" id="WellbeingArticleInput" />
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary">Update Article</button>
+                                </div>
+                                <div class="@((wellbeingContent.ArticleUpdateResponse != null) ? string.Empty : "hidden") alert alert-success" role="alert">
+                                    Article updated successfully with Id: @wellbeingContent.ArticleUpdateResponse?.Uuids[0]
+                                </div>
+                            </EditForm> *@
+                        </Content>
+                    </Tab>
+                </Tabs>
+
             </td>
             <td style="font-size:8pt">
                 <h5>Providers</h5>
@@ -79,7 +148,7 @@
                         @foreach (var topic in topicsResponse.Topics.OrderBy(p => p.Name))
                         {
                             <li>
-                                <strong>@topic.Name</strong> - @topic.Uuid
+                                <strong>@topic.Id: @topic.Name (@topic.Type | @topic.Label)</strong> - @topic.Uuid
                             </li>
                         }
                     }
@@ -109,8 +178,44 @@
     RGWellbeingTagsResponse tagsResponse;
 
     WellbeingContentViewModel wellbeingContent = new WellbeingContentViewModel();
-
     ProtectedBrowserStorageResult<RgPartnerAuthResponse?> token;
+
+    public void LoadArticleContent() => wellbeingContent.ContentCreateRequest = new RgWellbeingContentCreateRequest()
+        {
+            Thumbnail = "https://images.unsplash.com/photo-1746457002269-106424d702e4?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxN3x8fGVufDB8fHx8fA%3D%3D",
+            Description = DateTime.Now.ToString("ddd d MM yyyy HH:mm:ss") + "Join Coxy in this 15-minute video",
+            Title = DateTime.Now.ToString("ddd d MM yyyy HH:mm:ss") + " Ear tension release",
+            ContentType = "article",
+            Provider = providersResponse.Providers[0].Uuid,
+            TopicUuid = topicsResponse.Topics[1].Uuid, // 0 is 'Featured' - don't reuse this, 1 is workout
+            LanguageCode = "en",
+            TagIds = new List<string> // default to first 2 tags for now...
+                {
+                    "f417fca0-52a9-4701-837a-2a7c4509f17a",
+                    "45be55a9-b733-41b4-91a3-ce111e34c3c5",
+                    "50c38c1b-3476-4eab-bb71-c0dd2c94a29d"
+                    //relevantTags[0].Uuid,
+                    //relevantTags[1].Uuid
+                }
+        };
+    public void LoadRecipeContent() => wellbeingContent.ContentCreateRequest = new RgWellbeingContentCreateRequest()
+        {
+            Thumbnail = "https://images.unsplash.com/photo-1746457002269-106424d702e4?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxN3x8fGVufDB8fHx8fA%3D%3D",
+            Description = DateTime.Now.ToString("ddd d MM yyyy HH:mm:ss") + "Join Coxy in this 15-minute video",
+            Title = DateTime.Now.ToString("ddd d MM yyyy HH:mm:ss") + " Ear tension release",
+            ContentType = "recipe",
+            Provider = providersResponse.Providers[0].Uuid,
+            TopicUuid = topicsResponse.Topics[3].Uuid, // 0 is 'Featured' - don't reuse this, 1 is workout
+            LanguageCode = "en",
+            TagIds = new List<string> // default to first 2 tags for now...
+                {
+                    "f417fca0-52a9-4701-837a-2a7c4509f17a",
+                    "45be55a9-b733-41b4-91a3-ce111e34c3c5",
+                    "50c38c1b-3476-4eab-bb71-c0dd2c94a29d"
+                    //relevantTags[0].Uuid,
+                    //relevantTags[1].Uuid
+                }
+        };
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -120,7 +225,7 @@
         {
             throw new InvalidOperationException("You must authenticate before using this page.");
         }
-         
+
         if (firstRender)
         {
             rgContentManager = new RgContentManager(token.Value, true);
@@ -128,28 +233,60 @@
             topicsResponse = await rgContentManager.GetTopics();
             tagsResponse = await rgContentManager.GetTags();
 
-            wellbeingContent.ContentCreateRequest = new RgWellbeingContentCreateRequest()
-            {
-                Thumbnail = "https://images.unsplash.com/photo-1746457002269-106424d702e4?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxN3x8fGVufDB8fHx8fA%3D%3D",
-                Description = DateTime.Now.ToString("ddd MM yyyy HH:mm:ss") + "Join Coxy in this 15-minute video",
-                Title = DateTime.Now.ToString("ddd MM yyyy HH:mm:ss") + " Ear tension release",
-                ContentType = "article",
-                Provider = providersResponse.Providers[0].Uuid,
-                TopicUuid = topicsResponse.Topics[1].Uuid, // 0 is 'Featured' - don't reuse this, 1 is workout
-                LanguageCode = "en",
-                TagIds = new List<string> // default to first 2 tags for now...
-                {
-                    "f417fca0-52a9-4701-837a-2a7c4509f17a",
-                    "45be55a9-b733-41b4-91a3-ce111e34c3c5",
-                    "50c38c1b-3476-4eab-bb71-c0dd2c94a29d"
-                    //relevantTags[0].Uuid,
-                    //relevantTags[1].Uuid
-                }
-            };
-
             // default article content
-            wellbeingContent.ArticleHtmlRequest = "<p>Today is " + DateTime.Now.ToString("ddd MM yyyy HH:mm:ss") + "</p>";
-
+            var now = DateTime.Now.ToString("ddd d M yyyy HH:ss");
+            wellbeingContent.ArticleHtmlRequest = "<p>Today is " + now + "</p>";
+            wellbeingContent.RecipeJsonRequest = String.Format(@"
+                {{
+                    ""content"": {{
+                        ""description"": ""{0} Here is a deliciously filling smoothie for breakfast. Only five ingredients are needed, and it will fill you up until lunch!"",
+                        ""difficultyLevel"": 1,
+                        ""stats"": [
+                            {{
+                                ""type"": ""prepTime"",
+                                ""unit"": ""min"",
+                                ""value"": ""5""
+                            }},
+                            {{
+                                ""type"": ""servings"",
+                                ""unit"": ""quantity"",
+                                ""value"": ""1""
+                            }},
+                            {{
+                                ""type"": ""calories"",
+                                ""unit"": ""cCal"",
+                                ""value"": ""200""
+                            }}
+                        ],
+                        ""ingredients"": [
+                            {{
+                                ""value"": ""1"",
+                                ""unit"": ""quantity"",
+                                ""type"": ""banana""
+                            }},
+                            {{
+                                ""value"": ""0.5"",
+                                ""unit"": ""cup"",
+                                ""type"": ""oats""
+                            }},
+                            {{
+                                ""value"": ""0.25"",
+                                ""unit"": ""cup"",
+                                ""type"": ""greek yogurt""
+                            }},
+                            {{
+                                ""value"": ""1"",
+                                ""unit"": ""tbsp"",
+                                ""type"": ""honey""
+                            }}
+                        ],
+                        ""instructions"": [
+                            ""Add all the ingredients to a blender"",
+                            ""Blend until smooth"",
+                            ""Pour into a glass and enjoy!""
+                        ]
+                    }}
+                }}", now);
             StateHasChanged();
         }
     }
@@ -160,6 +297,7 @@
         {
             // create content
             wellbeingContent.ContentCreateResponse = await rgContentManager.CreateContent(wellbeingContent.ContentCreateRequest);
+            wellbeingContent.ArticleHtmlRequest = "<p>CREATED Time is " + DateTime.Now.ToString("ddd d M yyyy HH:mm:ss") + "</p>";
         }
         catch (Exception ex)
         {
@@ -174,8 +312,23 @@
         {
             // create content
             wellbeingContent.ArticleCreateResponse = await rgContentManager.UploadArticle(wellbeingContent.ContentCreateResponse.Uuid, wellbeingContent.ArticleHtmlRequest);
-            wellbeingContent.UpdatedArticleHtmlRequest = "<p>UPDATED Time is " + DateTime.Now.ToString("ddd MM yyyy HH:mm:ss") + "</p>";
+            wellbeingContent.UpdatedArticleHtmlRequest = "<p>UPDATED Time is " + DateTime.Now.ToString("ddd d M yyyy HH:mm:ss") + "</p>";
 
+        }
+        catch (Exception ex)
+        {
+            // errorMessage = ex.Message;
+            // showError = true;
+        }
+    }
+
+    async Task OnArticleDeleteSubmit(EditContext editContext)
+    {
+        try
+        {
+            // create content
+            wellbeingContent.ArticleDeleteResponse = await rgContentManager.DeleteArticle(wellbeingContent.ContentCreateResponse.Uuid, "article");
+            wellbeingContent.ArticleIsDeleted = true;
         }
         catch (Exception ex)
         {
@@ -197,8 +350,26 @@
             // showError = true;
         }
     }
+    
+    async Task OnRecipeCreateSubmit(EditContext editContext)
+    {
+        try
+        {
+            // create content
+            wellbeingContent.RecipeCreateResponse = await rgContentManager.UploadRecipe(wellbeingContent.ContentCreateResponse.Uuid, wellbeingContent.RecipeJsonRequest);
+            wellbeingContent.UpdatedArticleHtmlRequest = "<p>Recipe Creation Time is " + DateTime.Now.ToString("ddd d M yyyy HH:mm:ss") + "</p>";
+
+        }
+        catch (Exception ex)
+        {
+            // errorMessage = ex.Message;
+            // showError = true;
+        }
+    }
+
     public class WellbeingContentViewModel
     {
+        public bool ArticleIsDeleted { get; set; }
         public RgWellbeingContentCreateResponse ContentCreateResponse { get; set; }
         public RgWellbeingContentCreateRequest ContentCreateRequest { get; set; }
         public string ContentCreateRequestJson 
@@ -219,8 +390,11 @@
 
         public RgWellbeingArticleUploadResponse ArticleCreateResponse { get; set; }
         public RgWellbeingArticlePatchResponse ArticleUpdateResponse { get; set; }
+        public RgWellbeingArticleDeleteResponse ArticleDeleteResponse { get; set; }
+        public RgWellbeingRecipeUploadResponse RecipeCreateResponse { get; set; }
         public string ArticleHtmlRequest { get; set; }
         public string UpdatedArticleHtmlRequest { get; set; }
+        public string RecipeJsonRequest { get; set; }
 
         public string Content { get; set; } = string.Empty;
     }

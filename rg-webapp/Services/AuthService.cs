@@ -5,7 +5,8 @@ namespace RgWebapp.Services
 {
     public class AuthService
     {
-        Authentication authentication;
+        private Authentication authentication;
+        public event EventHandler AuthChanged;
 
         public async Task<RgPartnerAuthResponse> Authenticate(string clientId, string clientSecret, string partnerId)
         {
@@ -17,6 +18,10 @@ namespace RgWebapp.Services
             });
 
             var token = await authentication.GetAccessTokenAsync();
+
+            // assume no errors thrown 
+            AuthChanged?.Invoke(this, EventArgs.Empty);
+
             return token;
         }
     }

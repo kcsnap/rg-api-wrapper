@@ -4,9 +4,13 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>rg-webapp</RootNamespace>
+    <RootNamespace>RgWebapp</RootNamespace>
     <AssemblyName>$(AssemblyName.Replace(' ', '_'))</AssemblyName>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Blazor.Bootstrap" Version="3.3.1" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\rg-wellbeing\rg-wellbeing.csproj" />

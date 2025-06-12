@@ -1,0 +1,12 @@
+﻿<div id="blazor-layout-msg" class="@authentication">
+    User is Currently NOT Authenticated
+</div>
+
+@code {
+    private string authentication = "not-authenticated";
+
+    public void ChangeAuthenticationState()
+    {
+        authentication = "authenticated";
+    }
+}
