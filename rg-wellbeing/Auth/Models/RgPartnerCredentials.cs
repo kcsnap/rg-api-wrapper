@@ -26,6 +26,14 @@ namespace rg_wellbeing.Auth.Models
         public int ExpiresIn { get; set; }
     }
 
+    public class RgWellbeingProviderCreateRequest
+    {
+        [JsonProperty("name")]
+        public string Name { get; set; }
+        [JsonProperty("disclaimer")]
+        public string Disclaimer { get; set; }
+    }
+
     public class RgWellbeingContentCreateRequest
     {
         [JsonProperty("thumbnail")]
@@ -67,6 +75,12 @@ namespace rg_wellbeing.Auth.Models
     public class RgWellbeingArticleUploadResponse
     {
         public string[] Uuids { get; set; }
+    }
+    public class RgProviderCreateResponse
+    {
+        public string Uuid { get; set; }
+        public string Name { get; set; }
+        public string Disclaimer { get; set; }
     }
     public class RgWellbeingRecipeUploadResponse : RgWellbeingArticleUploadResponse { }
     public class RgWellbeingArticlePatchResponse

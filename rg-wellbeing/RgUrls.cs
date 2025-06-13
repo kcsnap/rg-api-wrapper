@@ -15,6 +15,7 @@ namespace rg_wellbeing
         public static string WellbeingTags => baseUrl + "/content/wellbeing/tags?limit=500";
         public static string WellbeingTopics => baseUrl + "/content/wellbeing/topics";
         public static string WellbeingProviders => baseUrl + "/content/providers";
+        public static string WellbeingProvidersUuid => baseUrl + "/content/providers/{0}";
         public static string WellbeingContent => baseUrl + "/content/wellbeing";
         public static string WellbeingContentPatch => baseUrl + "/content/wellbeing/{0}";
         public static string WellbeingContentTypeUuid => baseUrl + "/content/wellbeing/{0}/{1}"; // i.e. 0=>article,recipe,etc 1=>uuid

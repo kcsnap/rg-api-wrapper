@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using rg_wellbeing.Auth.Models;
-using System;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
@@ -50,6 +49,13 @@ namespace rg_wellbeing.Content
             return tags;            
         }
 
+        public async Task<RgProviderCreateResponse> CreateProvider(RgWellbeingProviderCreateRequest provider)
+        {
+            string json = JsonConvert.SerializeObject(provider);
+            return await WellbeingApiPost<RgProviderCreateResponse>(RgUrls.WellbeingProviders, json);
+
+        }
+
         public async Task<RGWellbeingProviderResponse> GetProviders()
         {
             var providers = await WellbeingApiGet<RGWellbeingProviderResponse>(RgUrls.WellbeingProviders);
@@ -78,7 +84,6 @@ namespace rg_wellbeing.Content
         {
             string json = JsonConvert.SerializeObject(wellbeingContent);
             return await WellbeingApiPost<RgWellbeingContentCreateResponse>(RgUrls.WellbeingContent, json);
-
 
             //string json = JsonConvert.SerializeObject(wellbeingContent);
             //HttpContent httpContent = new StringContent(json, Encoding.UTF8, "application/json");
@@ -137,6 +142,25 @@ namespace rg_wellbeing.Content
             {
                 // Handle the error response
                 throw new Exception($"Error: {response.StatusCode}, {await response.Content.ReadAsStringAsync()}");
+            }
+        }
+
+        public async Task<RgWellbeingContentCreateResponse> DeleteProvider(string providerUuid)
+        {            
+            var response = await _httpClient.DeleteAsync(String.Format(RgUrls.WellbeingProvidersUuid, providerUuid));
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Read the response content as a string
+                var result = await response.Content.ReadAsStringAsync();
+                var wellbeingResponse = JsonConvert.DeserializeObject<RgWellbeingContentCreateResponse>(result);
+                return wellbeingResponse;
+            }
+            else
+            {
+                // Handle the error response
+                var errorMsg = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Error: {response.StatusCode}, {errorMsg}");
             }
         }
 
