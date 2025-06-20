@@ -13,22 +13,50 @@
 
 <h2>Wellbeing</h2>
 
+<h4>Single Content</h4>
+<p>Retrieve content by Id</p>
+
+<EditForm OnSubmit="@OnRetrieveContent" Model="@wellbeingContent" FormName="OnRetrieveContent">
+    <div class="form-group">
+        <InputText @bind-Value=wellbeingContent.ContentUuid class="form-control" id="WellbeingContentInput" />
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Retrieve Content</button>
+    </div>
+    <div>
+        <div class="@(String.IsNullOrEmpty(ErrorMsgSingle) ? "hidden" : string.Empty) alert alert-success" role="alert">
+            @ErrorMsgSingle
+        </div>
+    </div>
+    <div class="form-group">
+        @if (wellbeingContent.RetrieveContentResponse != null)
+        {
+            <pre>
+                @wellbeingContent.RetrieveContentResponseJson
+            </pre>
+        }
+    </div>
+</EditForm>
+
+<hr />
+
+<h4>All Content</h4>
 <p>View all live wellbeing content</p>
 
 <div>
-    <h4>Articles</h4>
-    <div></div>
-    <div class="@(String.IsNullOrEmpty(ErrorMsg) ? "hidden" : string.Empty) alert alert-success" role="alert">
-        @ErrorMsg
+    <div class="@(String.IsNullOrEmpty(ErrorMsgAll) ? "hidden" : string.Empty) alert alert-success" role="alert">
+        @ErrorMsgAll
     </div>
 </div>
 
+
 @code {
     RgContentManager rgContentManager;
-
-    WellbeingContentViewModel wellbeingContent = new WellbeingContentViewModel();
-    public string ErrorMsg { get; set; }
     ProtectedBrowserStorageResult<RgPartnerAuthResponse?> token;
+    WellbeingContentViewModel wellbeingContent = new WellbeingContentViewModel();
+
+    public string? ErrorMsgSingle { get; set; }
+    public string ErrorMsgAll { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -48,15 +76,48 @@
             }
             catch(Exception ex)
             {
-                ErrorMsg = ex.Message;
+                ErrorMsgAll = ex.Message;
                 StateHasChanged();
             }
         }
     }
 
+    async Task OnRetrieveContent(EditContext editContext)
+    {
+        try
+        {
+            wellbeingContent.RetrieveContentResponse = (await rgContentManager.GetContent(wellbeingContent.ContentUuid)).Content;
+        }
+        catch(Exception ex)
+        {
+            ErrorMsgSingle = ex.Message;
+            StateHasChanged();
+        }
+    }
+
     public class WellbeingContentViewModel
     {
+        public WellbeingArticle Article { get; set; }
+
+        public GetArticleContent RetrieveContentResponse { get; set; }
+        public string RetrieveContentResponseJson
+        {
+            get { return JsonConvert.SerializeObject(RetrieveContentResponse, Formatting.Indented); }
+            set
+            {
+                try
+                {
+                    RetrieveContentResponse = JsonConvert.DeserializeObject<GetArticleContent>(value) ?? new GetArticleContent();
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException("Invalid content create request JSON: " + ex.Message);
+                }
+            }
+        }
+
         public IList<WellbeingArticle> Articles { get; set; }
+        public string ContentUuid { get; set; }
     }
 
     public class WellbeingArticle

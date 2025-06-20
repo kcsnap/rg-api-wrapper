@@ -63,3 +63,14 @@ h1:focus {
     font-size:10pt;
     height:250pt;
 }
+
+
+.tab-content {
+    padding: 10px;
+    background-color: lightgrey;
+}
+
+.nav-link.active {
+    background-color: lightgrey !important;
+    border:none;
+}

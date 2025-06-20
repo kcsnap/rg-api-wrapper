@@ -70,7 +70,17 @@ namespace rg_wellbeing.Content
             {
                 // Read the response content as a string
                 var result = await response.Content.ReadAsStringAsync();
-                var wellbeingResponse = JsonConvert.DeserializeObject<T>(result);
+                T wellbeingResponse;
+                                
+                if (typeof(T) == typeof(String)) // shouldn't do this in generics! But only a test app!
+                {
+                    wellbeingResponse = (T)(object)result; // Cast to string if T is string
+                }
+                else
+                { 
+                    wellbeingResponse = JsonConvert.DeserializeObject<T>(result);
+                }
+                
                 return wellbeingResponse;
             }
             else
@@ -103,24 +113,25 @@ namespace rg_wellbeing.Content
             //}
         }
 
-        public async Task<RgWellbeingContentPatchResponse[]> ChangeContent(string uuid, RgWellbeingContentCreateRequest wellbeingContent)
+        public async Task<RgWellbeingContentUpdateResponse> ChangeContent(string uuid, RgWellbeingContentUpdateRequest wellbeingContent)
         {
             string json = JsonConvert.SerializeObject(wellbeingContent);
             var url = string.Format(RgUrls.WellbeingContentPatch, uuid);
 
-            return await WellbeingApiPatch<RgWellbeingContentPatchResponse[]>(url, json);
+            var response = await WellbeingApiPatch<RgWellbeingContentUpdateResponse[]>(url, json);
+            return response[0];
         }
 
-        public async Task<RgWellbeingContentCreateResponse> GetContent(string uuid)
+        public async Task<BaseGetArticleContent> GetContent(string uuid)
         {
-            var url = string.Format(RgUrls.WellbeingContentPatch, uuid);
+            var url = string.Format(RgUrls.WellbeingContentArticle, uuid);
 
-            return await WellbeingApiGet<RgWellbeingContentCreateResponse>(url);
+            return await WellbeingApiGet<BaseGetArticleContent>(url);
         }
 
         public async Task<RgWellbeingArticlesResponse> GetArticlesAsync()
         {
-            var url = string.Format(RgUrls.WellbeingContent) + "?offset=0&limit=100&topicId=10";
+            var url = string.Format(RgUrls.WellbeingContentGet) + "?offset=0&limit=100&topicId=10";
 
             return await WellbeingApiGet<RgWellbeingArticlesResponse>(url);
         }
@@ -164,11 +175,11 @@ namespace rg_wellbeing.Content
             }
         }
 
-        public async Task<RgWellbeingArticleUploadResponse> GetArticle(string uuid)
+        public async Task<string> GetArticle(string uuid)
         {
             var url = string.Format(RgUrls.WellbeingContentArticle, uuid);
 
-            return await WellbeingApiGet<RgWellbeingArticleUploadResponse>(url);
+            return await WellbeingApiGet<string>(url);
         }
         public async Task<RgWellbeingArticleUploadResponse> UploadArticle(string uuid, string articleHtmlAsString)
         {
@@ -182,14 +193,36 @@ namespace rg_wellbeing.Content
 
             return await WellbeingApiPost<RgWellbeingArticleUploadResponse>(url, request);
         }
-        public async Task<RgWellbeingRecipeUploadResponse> UploadRecipe(string uuid, string recipeJsonAsString)
+        public async Task<RgWellbeingAudioUploadResponse> UploadAudio(string uuid, string audioUrl)
         {
-            //string json = JsonConvert.SerializeObject(request);
-            var url = string.Format(RgUrls.WellbeingContentRecipe, uuid);
+            var request = "{" +
+                "\"media\": [" +
+                    "\"" + audioUrl + "\"" +
+                "]" +
+            "}";
 
-            return await WellbeingApiPost<RgWellbeingRecipeUploadResponse>(url, recipeJsonAsString);
+            var url = string.Format(RgUrls.WellbeingContentAudio, uuid);
+            return await WellbeingApiPost<RgWellbeingAudioUploadResponse>(url, request);
+        }
+        public async Task<RgWellbeingAudioPatchResponse> ChangeAudio(string uuid, string audioUrl)
+        {
+            var request = "{" +
+                "\"media\": [" +
+                    "\"" + audioUrl + "\"" +
+                "]" +
+            "}";
+
+            var url = string.Format(RgUrls.WellbeingContentAudio, uuid);
+            return await WellbeingApiPatch<RgWellbeingAudioPatchResponse>(url, request);
         }
 
+        public async Task<RgWellbeingAudioDeleteResponse> DeleteAudio(string uuid, string contentType)
+        {
+            var url = string.Format(RgUrls.WellbeingContentTypeUuid, contentType, uuid);
+
+            return await WellbeingApiDelete<RgWellbeingAudioDeleteResponse>(url);
+
+        }
         public async Task<RgWellbeingArticlePatchResponse> ChangeArticle(string uuid, string articleHtmlAsString)
         {
             var request = "{" +
@@ -200,7 +233,6 @@ namespace rg_wellbeing.Content
             var url = string.Format(RgUrls.WellbeingContentArticle, uuid);
 
             return await WellbeingApiPatch<RgWellbeingArticlePatchResponse>(url, request);
-
         }
 
         public async Task<RgWellbeingArticleDeleteResponse> DeleteArticle(string uuid, string contentType)
@@ -236,7 +268,7 @@ namespace rg_wellbeing.Content
     
         private async Task<T> WellbeingApiPatch<T>(string url, string body)
         {
-            string json = JsonConvert.SerializeObject(body);
+            //string json = JsonConvert.SerializeObject(body);
             HttpContent httpContent = new StringContent(body, Encoding.UTF8, "application/json");
 
             // make the call

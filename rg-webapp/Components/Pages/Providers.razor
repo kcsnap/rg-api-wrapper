@@ -9,7 +9,7 @@
 <h2>Providers</h2>
 <h3>Add Provider</h3>
 
-<EditForm OnSubmit="@OnProviderCreateSubmit" Model="@providerContent">
+<EditForm OnSubmit="@OnProviderCreateSubmit" Model="@providerContent" FormName="OnProviderCreateSubmit">
     <div class="form-group">
         <InputTextArea @bind-Value=providerContent.ProviderCreateRequestJson class="form-control json-format" id="ProviderInput" />
     </div>

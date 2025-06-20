@@ -15,7 +15,7 @@ namespace rg_wellbeing.Auth.Models
     {
         [JsonProperty("access_token")]
         public string AccessToken { get; set; }
-        
+
         [JsonProperty("refresh_token")]
         public string RefreshToken { get; set; }
 
@@ -45,20 +45,24 @@ namespace rg_wellbeing.Auth.Models
         [JsonProperty("title")]
         public string Title { get; set; }
 
-        [JsonProperty("contentType")]        
+        [JsonProperty("contentType")]
         public string ContentType { get; set; }
-        
-        [JsonProperty("provider")]        
+
+        [JsonProperty("provider")]
         public string Provider { get; set; }
-        
-        [JsonProperty("topicUuid")]        
+
+        [JsonProperty("topicUuid")]
         public string TopicUuid { get; set; }
-        
-        [JsonProperty("languageCode")]        
+
+        [JsonProperty("languageCode")]
         public string LanguageCode { get; set; }
-        
+
         [JsonProperty("tagIds")]
         public List<string> TagIds { get; set; }
+    }
+    public class RgWellbeingContentUpdateRequest : RgWellbeingContentCreateRequest
+    {
+
     }
 
     public class RgWellbeingArticlesResponse
@@ -68,7 +72,7 @@ namespace rg_wellbeing.Auth.Models
     {
         public string Uuid { get; set; }
     }
-    public class RgWellbeingContentPatchResponse
+    public class RgWellbeingContentUpdateResponse
     {
         public string Uuid { get; set; }
     }
@@ -82,7 +86,10 @@ namespace rg_wellbeing.Auth.Models
         public string Name { get; set; }
         public string Disclaimer { get; set; }
     }
-    public class RgWellbeingRecipeUploadResponse : RgWellbeingArticleUploadResponse { }
+    public class RgWellbeingAudioUploadResponse : RgWellbeingArticleUploadResponse { }
+
+    public class RgWellbeingAudioPatchResponse : RgWellbeingArticlePatchResponse { }
+
     public class RgWellbeingArticlePatchResponse
     {
         // THIS IS RETURNING A FULL OBJECT AND NOT UUID LIKE THE ABOVE
@@ -92,10 +99,46 @@ namespace rg_wellbeing.Auth.Models
     {
         public string uuid { get; set; }
     }
+
+    public class RgWellbeingAudioDeleteResponse : RgWellbeingArticleDeleteResponse { }
     public class RgWellbeingArticleDeleteResponse
     {
 
     }
+
+    public class Tag
+    {
+        public string TagUuid { get; set; }
+        public string Title { get; set; }
+    }
+
+    public class ArticleData
+    {
+        public string Content { get; set; }
+    }
+
+    public class DetailedContent
+    {
+        public ArticleData ArticleData { get; set; }
+    }
+
+    public class BaseGetArticleContent
+    {
+        public GetArticleContent Content { get; set; }
+    }
+
+    public class GetArticleContent
+    {
+        public string Uuid { get; set; }
+        public string TopicUuid { get; set; }
+        public string Title { get; set; }
+        public string Thumbnail { get; set; }
+        public string ContentType { get; set; }
+        public string Description { get; set; }
+        public List<Tag> Tags { get; set; }
+        public DetailedContent DetailedContent { get; set; }
+    }
+
 
     public class RGWellbeingTag
     {

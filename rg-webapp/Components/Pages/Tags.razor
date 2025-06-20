@@ -1,0 +1,60 @@
+﻿@page "/tags"
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using rg_wellbeing.Auth.Models
+@using rg_wellbeing.Content
+@rendermode InteractiveServer
+@inject ProtectedSessionStorage ProtectedSessionStore
+
+<PageTitle>Wellbeing Tags</PageTitle>
+
+<h3>Tags</h3>
+
+<table>
+    <tr>
+        <td>
+
+        </td>
+        <td>
+            <h5>Tags</h5>
+            <ul>
+                @if (tagsResponse != null)
+                {
+                    @foreach (var tag in tagsResponse.Tags.OrderBy(p => p.Title))
+                    {
+                        <li>
+                            <strong>@tag.Title</strong> - @tag.Uuid
+                        </li>
+                    }
+                }
+            </ul>
+        </td>
+    </tr>
+</table>
+
+@code {
+    RgContentManager rgContentManager;
+    RGWellbeingTagsResponse tagsResponse;
+
+    ProtectedBrowserStorageResult<RgPartnerAuthResponse?> token;
+
+    public string ErrorMsg { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        token = await ProtectedSessionStore.GetAsync<RgPartnerAuthResponse?>(RgSessionKeys.Token);
+
+        if (!token.Success || token.Value == null)
+        {
+            throw new InvalidOperationException("You must authenticate before using this page.");
+        }
+
+        if (firstRender)
+        {
+            rgContentManager = new RgContentManager(token.Value, true);
+            tagsResponse = await rgContentManager.GetTags();
+
+            StateHasChanged();
+        }
+    }
+
+}

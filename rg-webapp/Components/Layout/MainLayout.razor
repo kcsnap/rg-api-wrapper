@@ -1,22 +1,17 @@
-﻿@using RgWebapp.Services
+﻿@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using RgWebapp.Services
 @using BlazorBootstrap;
+@using rg_wellbeing.Auth.Models
 @inherits LayoutComponentBase
 @inject LayoutService LayoutService;
-@* 
-<div id="blazor-layout-msg" class="@authentication">
-    User is Currently NOT Authenticated
-</div> *@
+@inject ProtectedSessionStorage ProtectedSessionStore
 
 <div class="page">
     <div class="sidebar">
         <NavMenu />
     </div>
 
-    <main>
-        @* <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div> *@
-
+    <main>        
         <article class="content px-4">
             @Body
         </article>
@@ -28,22 +23,3 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
-
-@code {
-    protected override void OnParametersSet() =>
-        this.LayoutService.AuthMessageChanged += this.AuthChanged;
-
-    private async void AuthChanged(object? sender, EventArgs e)
-    {
-        await InvokeAsync(() =>
-        {
-            authentication = "authenticated";
-            StateHasChanged();
-        });
-    }
-
-    private string authentication = "not-authenticated";
-
-    public void Dispose()
-        => this.LayoutService.AuthMessageChanged -= this.AuthChanged;
-}

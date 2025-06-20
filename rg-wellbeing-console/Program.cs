@@ -107,10 +107,11 @@ var contentManager = new RgContentManager(authResponse, true);
     // update content
     Console.WriteLine();
     Console.WriteLine("Update Content...");
+
     contentCreation.Title = "UPDATED " + DateTime.Now.ToString("ddd MM yyyy HH:mm:ss") + " Ear tension release";
     contentCreation.Description = "UPDATED " + DateTime.Now.ToString("ddd MM yyyy HH:mm:ss") + " Join Coxy in this 15-minute video";
-    var updatedContent = await contentManager.ChangeContent(responseContent.Uuid, contentCreation);
-    Console.WriteLine("Content udpated with Uuid: " + updatedContent[0].Uuid);
+    //var updatedContent = await contentManager.ChangeContent(responseContent.Uuid, contentCreation);
+    //Console.WriteLine("Content udpated with Uuid: " + updatedContent[0].Uuid);
 
     //// get updated content
     //var updatedContentGet = await contentManager.GetContent(responseContent.Uuid);

@@ -8,6 +8,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddSingleton<LayoutService>();
+builder.Services.AddSingleton<AuthService>();
 builder.Services.AddBlazorBootstrap();
 
 var app = builder.Build();
