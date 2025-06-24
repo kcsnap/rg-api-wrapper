@@ -6,6 +6,7 @@
 @using RgWebapp.Services
 @using rg_wellbeing.Auth.Models
 @using rg_wellbeing.Content
+
 @rendermode InteractiveServer
 @inject ProtectedSessionStorage ProtectedSessionStore
 
@@ -16,7 +17,15 @@
 <h4>Single Content</h4>
 <p>Retrieve content by Id</p>
 
-<EditForm OnSubmit="@OnRetrieveContent" Model="@wellbeingContent" FormName="OnRetrieveContent">
+<EditForm OnSubmit="@OnRetrieveContent" Model="@wellbeingContent.ContentType" FormName="OnRetrieveContent_">
+    <div class="form-group">
+        <select class="btn btn-outline-primary dropdown-toggle" @bind=@wellbeingContent.ContentType>
+            <option value="article">article</option>
+            <option value="audio">audio</option>
+            <option value="video">video</option>
+            <option value="recipe">recipe</option>
+        </select>
+    </div>
     <div class="form-group">
         <InputText @bind-Value=wellbeingContent.ContentUuid class="form-control" id="WellbeingContentInput" />
     </div>
@@ -32,7 +41,7 @@
         @if (wellbeingContent.RetrieveContentResponse != null)
         {
             <pre>
-                @wellbeingContent.RetrieveContentResponseJson
+                @JsonConvert.SerializeObject(JsonConvert.DeserializeObject(wellbeingContent.RetrieveContentResponse), Formatting.Indented)
             </pre>
         }
     </div>
@@ -42,7 +51,20 @@
 
 <h4>All Content</h4>
 <p>View all live wellbeing content</p>
+<select class="btn btn-outline-primary dropdown-toggle" @bind="@wellbeingContent.ContentType">
+    <option value="article">article</option>
+    <option value="audio">audio</option>
+    <option value="video">video</option>
+    <option value="recipe">recipe</option>
+</select>
+<div class="form-group">
+    <button @onclick="OnRetrieveAll" type="submit" class="btn btn-primary">Retrieve All</button>
+</div>
 
+@if (wellbeingContent.Articles != null)
+{
+    <pre>@JsonConvert.SerializeObject(JsonConvert.DeserializeObject(wellbeingContent.Articles), Formatting.Indented)</pre>
+}
 <div>
     <div class="@(String.IsNullOrEmpty(ErrorMsgAll) ? "hidden" : string.Empty) alert alert-success" role="alert">
         @ErrorMsgAll
@@ -69,16 +91,22 @@
 
         if (firstRender)
         {
-            try
-            {
-                rgContentManager = new RgContentManager(token.Value);
-                var articles = await rgContentManager.GetArticlesAsync();
-            }
-            catch(Exception ex)
-            {
-                ErrorMsgAll = ex.Message;
-                StateHasChanged();
-            }
+            rgContentManager = new RgContentManager(token.Value);
+        }
+    }
+
+    public async Task OnRetrieveAll()
+    {
+        try
+        {
+            rgContentManager = new RgContentManager(token.Value);
+            wellbeingContent.Articles = await rgContentManager.GetContentAsync(wellbeingContent.ContentType);
+            StateHasChanged();
+        }
+        catch(Exception ex)
+        {
+            ErrorMsgAll = ex.Message;
+            StateHasChanged();
         }
     }
 
@@ -86,7 +114,7 @@
     {
         try
         {
-            wellbeingContent.RetrieveContentResponse = (await rgContentManager.GetContent(wellbeingContent.ContentUuid)).Content;
+            wellbeingContent.RetrieveContentResponse = await rgContentManager.GetContent(wellbeingContent.ContentUuid, wellbeingContent.ContentType);
         }
         catch(Exception ex)
         {
@@ -99,25 +127,28 @@
     {
         public WellbeingArticle Article { get; set; }
 
-        public GetArticleContent RetrieveContentResponse { get; set; }
-        public string RetrieveContentResponseJson
-        {
-            get { return JsonConvert.SerializeObject(RetrieveContentResponse, Formatting.Indented); }
-            set
-            {
-                try
-                {
-                    RetrieveContentResponse = JsonConvert.DeserializeObject<GetArticleContent>(value) ?? new GetArticleContent();
-                }
-                catch (Exception ex)
-                {
-                    throw new InvalidOperationException("Invalid content create request JSON: " + ex.Message);
-                }
-            }
-        }
+        public string RetrieveContentResponse { get; set; }
+        // public string RetrieveContentResponseJson
+        // {
+        //     get { return JsonConvert.SerializeObject(RetrieveContentResponse, Formatting.Indented); }
+        //     set
+        //     {
+        //         try
+        //         {
+        //             RetrieveContentResponse = JsonConvert.DeserializeObject<GetArticleContent>(value) ?? new GetArticleContent();
+        //         }
+        //         catch (Exception ex)
+        //         {
+        //             throw new InvalidOperationException("Invalid content create request JSON: " + ex.Message);
+        //         }
+        //     }
+        // }
 
-        public IList<WellbeingArticle> Articles { get; set; }
+        // public IList<WellbeingArticle> Articles { get; set; }
+        public string Articles { get; set; }
+
         public string ContentUuid { get; set; }
+        public string ContentType { get; set; } = "article";
     }
 
     public class WellbeingArticle

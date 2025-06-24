@@ -78,7 +78,7 @@ var contentManager = new RgContentManager(authResponse, true);
     {
         Thumbnail = "https://images.unsplash.com/photo-1746457002269-106424d702e4?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxN3x8fGVufDB8fHx8fA%3D%3D",
         Description = DateTime.Now.ToString("ddd MM yyyy HH:mm:ss") + "Join Coxy in this 15-minute video",
-        Title = DateTime.Now.ToString("ddd MM yyyy HH:mm:ss") + " Ear tension release",
+        Title = DateTime.Now.ToString("ddd MM yyyy HH:mm:ss") + " Title for the masses",
         ContentType = "article",
         Provider = providersResponse.Providers[0].Uuid,
         TopicUuid = topicsResponse.Topics[1].Uuid, // 0 is 'Featured' - don't reuse this, 1 is workout
@@ -108,7 +108,7 @@ var contentManager = new RgContentManager(authResponse, true);
     Console.WriteLine();
     Console.WriteLine("Update Content...");
 
-    contentCreation.Title = "UPDATED " + DateTime.Now.ToString("ddd MM yyyy HH:mm:ss") + " Ear tension release";
+    contentCreation.Title = "UPDATED " + DateTime.Now.ToString("ddd MM yyyy HH:mm:ss") + " Title for the masses";
     contentCreation.Description = "UPDATED " + DateTime.Now.ToString("ddd MM yyyy HH:mm:ss") + " Join Coxy in this 15-minute video";
     //var updatedContent = await contentManager.ChangeContent(responseContent.Uuid, contentCreation);
     //Console.WriteLine("Content udpated with Uuid: " + updatedContent[0].Uuid);

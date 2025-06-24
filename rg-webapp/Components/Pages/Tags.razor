@@ -7,31 +7,27 @@
 
 <PageTitle>Wellbeing Tags</PageTitle>
 
-<h3>Tags</h3>
-
-<table>
-    <tr>
-        <td>
-
-        </td>
-        <td>
-            <h5>Tags</h5>
-            <ul>
-                @if (tagsResponse != null)
-                {
-                    @foreach (var tag in tagsResponse.Tags.OrderBy(p => p.Title))
-                    {
-                        <li>
-                            <strong>@tag.Title</strong> - @tag.Uuid
-                        </li>
-                    }
-                }
-            </ul>
-        </td>
-    </tr>
-</table>
+<h5>Tags</h5>
+<div class="form-group">
+    <InputText @bind-Value=TagSearch class="form-control" id="WellbeingTagsInput" />
+    <div class="form-group">
+        <button @onclick="FilterTags" type="submit" class="btn btn-primary">Filter</button>
+    </div>
+</div>
+<ul>
+    @if (tagsResponse != null)
+    {
+        @foreach (var tag in tagsResponse.Tags.OrderBy(p => p.Title))
+        {
+            <li>
+                <strong>@tag.Title</strong> - @tag.Uuid
+            </li>
+        }
+    }
+</ul>
 
 @code {
+    public string TagSearch { get; set; } = "?name[]=yoga&name[]=15min";
     RgContentManager rgContentManager;
     RGWellbeingTagsResponse tagsResponse;
 
@@ -57,4 +53,9 @@
         }
     }
 
+    public async Task FilterTags()
+    {
+        tagsResponse = await rgContentManager.GetTags(TagSearch);
+        StateHasChanged();
+    }
 }

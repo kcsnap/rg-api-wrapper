@@ -64,10 +64,9 @@ namespace rg_wellbeing.Auth.Models
     {
 
     }
+    
 
-    public class RgWellbeingArticlesResponse
-    {
-    }
+    #region content
     public class RgWellbeingContentCreateResponse
     {
         public string Uuid { get; set; }
@@ -76,35 +75,56 @@ namespace rg_wellbeing.Auth.Models
     {
         public string Uuid { get; set; }
     }
-    public class RgWellbeingArticleUploadResponse
-    {
-        public string[] Uuids { get; set; }
-    }
     public class RgProviderCreateResponse
     {
         public string Uuid { get; set; }
         public string Name { get; set; }
         public string Disclaimer { get; set; }
     }
+    #endregion
+    #region recipe
+    public class RgWellbeingRecipeUploadResponse : RgWellbeingArticleUploadResponse { }
+    public class RgWellbeingRecipePatchResponse : RgWellbeingArticlePatchResponse { }
+    public class RgWellbeingRecipeDeleteResponse : RgWellbeingArticleDeleteResponse { }
+    public class RgWellbeingRecipeResponse
+    {
+    }
+    #endregion
+    #region video
+    public class RgWellbeingVideoUploadResponse : RgWellbeingArticleUploadResponse { }
+    public class RgWellbeingVideoPatchResponse : RgWellbeingArticlePatchResponse { }
+    public class RgWellbeingVideoDeleteResponse : RgWellbeingArticleDeleteResponse { }
+    #endregion
+    #region audio
     public class RgWellbeingAudioUploadResponse : RgWellbeingArticleUploadResponse { }
-
     public class RgWellbeingAudioPatchResponse : RgWellbeingArticlePatchResponse { }
-
+    public class RgWellbeingAudioDeleteResponse : RgWellbeingArticleDeleteResponse { }
+    #endregion   
+    #region articles
+    public class RgWellbeingArticleUploadResponse
+    {
+        public string[] Uuids { get; set; }
+    }
     public class RgWellbeingArticlePatchResponse
     {
         // THIS IS RETURNING A FULL OBJECT AND NOT UUID LIKE THE ABOVE
         public PatchContent content { get; set; }
     }
+    public class RgWellbeingArticleDeleteResponse
+    {
+
+    }
+    public class RgWellbeingArticlesResponse
+    {
+    }
+    #endregion
+
     public class PatchContent
     {
         public string uuid { get; set; }
     }
 
-    public class RgWellbeingAudioDeleteResponse : RgWellbeingArticleDeleteResponse { }
-    public class RgWellbeingArticleDeleteResponse
-    {
-
-    }
+    
 
     public class Tag
     {
